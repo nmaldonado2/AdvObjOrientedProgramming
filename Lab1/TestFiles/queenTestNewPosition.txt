@@ -1,0 +1,17 @@
+Queen, white, B, 7
+Queen, black, B, 7
+Queen, white, B, 1
+Queen, black, B, 1
+
+Queen, white, A, 2
+Queen, black, A, 2
+Queen, white, D, 2
+Queen, black, D, 2
+
+Queen, white, A, 3
+Queen, black, A, 3
+Queen, white, D, 4
+Queen, black, D, 4
+
+Queen, white, C, 4
+Queen, black, C, 4

@@ -1,0 +1,16 @@
+Rook, white, C, 7
+Rook, black, C, 7
+
+Rook, white, C, 1
+Rook, black, C, 1
+
+Rook, white, H, 6
+Rook, black, H, 6
+
+Rook, white, B, 6
+Rook, black, B, 6
+
+Rook, white, A, 8
+Rook, black, A, 8
+Rook, white, D, 1
+Rook, black, D, 1

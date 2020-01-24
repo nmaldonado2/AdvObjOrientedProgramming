@@ -1,0 +1,12 @@
+Pawn, white, A, 1
+Pawn, white, B, 9
+Pawn, white, I, 1
+Pawn, WHiTE, A, 5
+
+king, blue, A, 5
+
+rOok, black, B, 7
+
+bishop, black, b, 7
+
+queen,     black, A, 1

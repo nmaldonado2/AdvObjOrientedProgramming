@@ -1,0 +1,11 @@
+Pawn, white, B, 4
+Pawn, white, B, 2
+Pawn, white, B, 1
+Pawn, white, C, 2
+Pawn, white C, 3
+
+Pawn, black, B, 4
+Pawn, black, B, 5
+Pawn, black, B, 2
+Pawn, black, C, 3
+Pawn, black, C, 2

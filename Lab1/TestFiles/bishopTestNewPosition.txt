@@ -1,0 +1,20 @@
+bishop, white, A, 8
+bishop, black, A, 8
+
+bishop, white, C, 8
+bishop, black, C, 8
+
+bishop, white, D, 5
+bishop, black, D, 5
+
+bishop, white, A, 6
+bishop, white, A, 6
+
+bishop, white, B, 1
+bishop, black, B, 1
+
+bishop, white, E, 7
+bishop, black, E, 7
+
+bishop, white, C, 5
+bishop, black, C, 5

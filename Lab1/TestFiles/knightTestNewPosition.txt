@@ -1,0 +1,26 @@
+Knight, white, C, 8
+Knight, black, C, 8
+Knight, white, E, 8
+Knight, black, E, 8
+Knight, white, C, 4
+Knight, black, C, 4
+Knight, white, E, 4
+Knight, black, E, 4
+
+Knight, white, B, 7
+Knight, black, B, 7
+Knight, white, F, 7
+Knight, black, F, 7
+Knight, white, B, 5
+Knight, black, B, 5
+Knight, white, F, 5
+Knight, black, F, 5
+
+Knight, white, C, 6
+Knight, black, C, 6
+
+Knight, white, D, 7
+Knight, black, D, 7
+
+Knight, white, B, 8
+Knight, black, B, 8

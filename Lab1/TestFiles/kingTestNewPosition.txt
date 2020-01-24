@@ -1,0 +1,23 @@
+King, white, C, 5
+King, black, C, 5
+King, white, C, 3
+King, black, C, 3
+
+King, white, C, 2
+King, black, C, 2
+
+King, white, B, 4
+King, black, B, 4
+King, white, D, 4
+King, black, D, 4
+
+King, white, F, 4
+King, black, F, 4
+
+King, white, D, 5
+King, black, D, 5
+King, white, B, 3
+King, black, B, 3
+
+King, white, A, 6
+King, black, A, 6
