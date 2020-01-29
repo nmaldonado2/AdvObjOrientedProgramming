@@ -13,8 +13,8 @@ public class King {
     private boolean isWhite;
     
     public King(){
-        this.xPosition = Move.MIN_BOARD_X_POSITION;
-        this.yPosition = Move.MIN_BOARD_Y_POSITION;
+        this.xPosition = Coordinates.MIN_BOARD_X_POSITION;
+        this.yPosition = Coordinates.MIN_BOARD_Y_POSITION;
     }
     
     public King(int position, boolean isWhite){
@@ -72,18 +72,18 @@ public class King {
      * Assume that the x-position is within the range of A-H and the y-position
      * is within the range of 1-8. Assume the piece's name is "King".
      */
-    public boolean validateMove(Move position) {
+    public boolean validateMove(Coordinates position) {
         
         // A king can move vertically, horizontally, or diagonally by only
         // 1 space.
-        if (position.moveVertically(this.xPosition, this.yPosition - 1, this.yPosition + 1)) {
+        if (position.canReachVertically(this.xPosition, this.yPosition - 1, this.yPosition + 1)) {
             return true;   
         }
-        if (position.moveHorizontally(this.yPosition, (char)(this.xPosition - 1), 
+        if (position.canReachHorizontally(this.yPosition, (char)(this.xPosition - 1), 
             (char)(this.xPosition + 1))) {
             return true;
         }
-        return position.moveDiagonally(this.xPosition, this.yPosition, true);
+        return position.canReachDiagonally(this.xPosition, this.yPosition, true);
     }
     
     public String listPosition(){

@@ -13,8 +13,8 @@ public class Bishop {
     private boolean isWhite;
     
     public Bishop(){
-        this.xPosition = Move.MIN_BOARD_X_POSITION;
-        this.yPosition = Move.MIN_BOARD_Y_POSITION;
+        this.xPosition = Coordinates.MIN_BOARD_X_POSITION;
+        this.yPosition = Coordinates.MIN_BOARD_Y_POSITION;
     }
     
     public Bishop(int position, boolean isWhite){
@@ -72,10 +72,10 @@ public class Bishop {
      * Assume that the x-position is within the range of A-H and the y-position
      * is within the range of 1-8. Assume the piece's name is "Bishop".
      */
-    public boolean validateMove (Move position) {
+    public boolean validateMove (Coordinates position) {
         
         // Bishop can move diagonally by any number of spaces.
-        return position.moveDiagonally(this.xPosition, this.yPosition, false);
+        return position.canReachDiagonally(this.xPosition, this.yPosition, false);
     }
     
     public String listPosition(){

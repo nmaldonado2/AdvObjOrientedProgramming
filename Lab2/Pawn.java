@@ -13,8 +13,8 @@ public class Pawn {
     private boolean isWhite;
     
     public Pawn(){
-        this.xPosition = Move.MIN_BOARD_X_POSITION;
-        this.yPosition = Move.MIN_BOARD_Y_POSITION;
+        this.xPosition = Coordinates.MIN_BOARD_X_POSITION;
+        this.yPosition = Coordinates.MIN_BOARD_Y_POSITION;
     }
     
     public Pawn(int position, boolean isWhite){
@@ -72,17 +72,17 @@ public class Pawn {
      * Assume that the x-position is within the range of A-H and the y-position
      * is within the range of 1-8. Assume the piece's name is "Pawn".
      */
-    public boolean validateMove(Move position) {
+    public boolean validateMove(Coordinates position) {
         
         // Since white pieces move up, 1 is added to the current
         // y position for the min and max y position values.
         if (this.isWhite) {
-            return position.moveVertically(this.xPosition, this.yPosition + 1, this.yPosition + 1);
+            return position.canReachVertically(this.xPosition, this.yPosition + 1, this.yPosition + 1);
         }
         
         // Since black pieces move down, 1 is subtracted from the
         // current y position.
-        return position.moveVertically(this.xPosition, this.yPosition - 1, this.yPosition - 1);
+        return position.canReachVertically(this.xPosition, this.yPosition - 1, this.yPosition - 1);
     }
     
     public String listPosition(){

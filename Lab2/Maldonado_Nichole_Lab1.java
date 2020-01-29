@@ -79,7 +79,7 @@ import java.util.InputMismatchException;
  * King, Queen, or Knight. Also assume that xPosition is a character from
  * 'A' to 'H' and yPosition is an integer from 1 - 8.
  */
-class Move {
+class Coordinates {
     private char xPosition;
     private int yPosition;
     
@@ -89,7 +89,7 @@ class Move {
     static final int MAX_BOARD_Y_POSITION = 8;
     static final int MIN_BOARD_Y_POSITION = 1;
     
-    public Move(char xPosition, int yPosition){
+    public Coordinates(char xPosition, int yPosition){
         this.xPosition = xPosition;
         this.yPosition = yPosition;
     }
@@ -114,7 +114,7 @@ class Move {
      * Assume that the x-positions are within the range of A-H and the y-position
      * is within the range of 1-8.
      */
-    public boolean moveVertically(char currXPosition, int minYPosition, int maxYPosition) {
+    public boolean canReachVertically(char currXPosition, int minYPosition, int maxYPosition) {
         
         if (currXPosition != this.xPosition) {
             return false;
@@ -134,7 +134,7 @@ class Move {
      * Assume that the x-position is within the range of A-H and the y-positions
      * are within the range of 1-8.
      */
-    public boolean moveHorizontally(int currYPosition, char minXPosition, char maxXPosition) {
+    public boolean canReachHorizontally(int currYPosition, char minXPosition, char maxXPosition) {
         
         if (currYPosition != this.yPosition) {
             return false;
@@ -153,7 +153,7 @@ class Move {
      * Assume that the x-position is within the range of A-H and the y-position
      * is within the range of 1-8.
      */
-    public boolean moveDiagonally(char currXPosition, int currYPosition, boolean moveOneOnly) {
+    public boolean canReachDiagonally(char currXPosition, int currYPosition, boolean moveOneOnly) {
         
         // The differences of the x and y positions must both be equal to
         // 1 to move one space.
@@ -165,7 +165,7 @@ class Move {
         return Math.abs(currXPosition - this.xPosition) == Math.abs(currYPosition - this.yPosition);
     }
     
-    public boolean moveLShape(char currXPosition, int currYPosition){
+    public boolean canReachLShape(char currXPosition, int currYPosition){
         
         // Valid move if the new position is 2 spaces horizontally and 1 space
         // vertically.
@@ -194,177 +194,12 @@ class Move {
  */
 public class Maldonado_Nichole_Lab1 {
     
-    
-//    /*
-//     * Method that verfies if a ChessPiece can move to the new
-//     * x and y position by calling the appropriate validate method
-//     * based on the chess piece's name.
-//     * @param: The chess piece and the x and y positions that will be verified.
-//     * @return: Returns true if the piece can move to the square marked by the
-//     *         x and y positions. False is otherwise returned.
-//     * Assume that the x-position is within the range of A-H and the y-position
-//     * is within the range of 1-8. Assume the piece's name is one of the
-//     * six chess piece types.
-//     */
-//    public static boolean validateMove(ChessPiece piece, char xPosition, int yPosition) {
-//        
-//        if (piece.getName().equals("Pawn")) {
-//            return validatePawnMove(piece, xPosition, yPosition);
-//        }
-//        if (piece.getName().equals("Rook")) {
-//            return validateRookMove(piece, xPosition, yPosition);
-//        }
-//        if (piece.getName().equals("Knight")) {
-//            return validateKnightMove(piece, xPosition, yPosition);
-//        }
-//        if (piece.getName().equals("Bishop")) {
-//            return validateBishopMove(piece, xPosition, yPosition);
-//        }
-//        if (piece.getName().equals("Queen")) {
-//            return validateQueenMove(piece, xPosition, yPosition);
-//        }
-//        
-//        // To avoid code redudancy, checks have already been made in prior methods 
-//        // so the last piece type is knight.
-//        return validateKingMove(piece, xPosition, yPosition);
-//    }
-    
-    
-    /*
-     * Method that creates a ChessPiece object and initializes the attributes
-     * with isWhite, xPosition, yPosition, and pieceType.
-     * @param: The boolean isWhite that is true if the piece is white, false if
-     *        the piece is black. The char xPosition falls within the range
-     *        'A' to 'H' and the yPosition falls within the range of 1 to 8.
-     *        The pieceType is a string representing the type of the chess piece.
-     * @return: Returns true if the piece can move to the square marked by the
-     *         x and y positions. False is otherwise returned.
-     */
-//    public static Object createChessPiece(boolean isWhite, char xPosition, 
-//        int yPosition, String pieceType) {
-//
-//        // Pawn piece can only move forward. Thus, a white pawn can not
-//        // exist at row 1 and a black pawn cannot exist at row 8.
-//        if (pieceType.equals("pawn") && isWhite && yPosition == MIN_BOARD_Y_POSITION) {
-//            return null;
-//        }
-//        if(pieceType.equals("pawn") && !isWhite && yPosition == MAX_BOARD_Y_POSITION){
-//            return null;
-////        }
-////        
-//        if (pieceType.equals("pawn")) {
-//            return (xPosition == yPosition) ? new Pawn(yPosition, isWhite) : new Pawn(xPosition, yPosition, isWhite);
-//        }
-//        if (pieceType.equals("rook")) {
-//            return (xPosition == yPosition) ? new Rook(yPosition, isWhite) : new Rook(xPosition, yPosition, isWhite);
-//        }
-//        if(pieceType.equals("knight")){
-//            return (xPosition == yPosition) ? new Knight(yPosition, isWhite) : new Knight(xPosition, yPosition, isWhite);
-//        }
-//        if(pieceType.equals("queen")){
-//            return (xPosition == yPosition) ? new Queen(yPosition, isWhite) : new Queen(xPosition, yPosition, isWhite);
-//        }
-//        if(pieceType.equals("king")){
-//            return (xPosition == yPosition) ? new King(yPosition, isWhite) : new King(xPosition, yPosition, isWhite);
-//        }
-//        return null;
-//    }
-    
-    /*
-     * Method that checks the attributes of the piece before signially the
-     * creation of the ChessPiece object.
-     * @param: A string array with 4 elements that should be in the form of
-     *        the chess piece [type, color, x-position, y-position]. Note
-     *        that these attributes will be checked int the method.
-     *        The pieceType is a string representing the type of the chess piece.
-     * @return: Returns true if the piece can move to the square marked by the
-     *         x and y positions. False is otherwise returned.
-     */
-//    public static Object prepareChessPiece(String[] pieceAttributes) {
-//        
-//        boolean isWhite;
-//        char xPosition;
-//        int yPosition;
-//        
-//        try {
-//            if (pieceAttributes[1].toLowerCase().equals("white")) {
-//                isWhite = true;   
-//            }
-//            else if (pieceAttributes[1].toLowerCase().equals("black")) {
-//                isWhite = false;
-//            }
-//            
-//            // The piece color can only be white or black.
-//            else {
-//                return null;
-//            }
-//            
-//            // The x-position of the piece must fall in range of the chess board.
-//            if (pieceAttributes[2].length() == 1) {
-//                xPosition = pieceAttributes[2].toUpperCase().charAt(0);
-//                if (xPosition < MIN_BOARD_X_POSITION || xPosition > MAX_BOARD_X_POSITION) {
-//                    return null;
-//                }
-//            }
-//            else {
-//                return null;
-//            }
-//            
-//            // The y-position must fall within the range of the chess board.
-//            yPosition = Integer.parseInt(pieceAttributes[3]);
-//            if (yPosition < MIN_BOARD_Y_POSITION || yPosition > MAX_BOARD_Y_POSITION) {
-//                return null;
-//            }
-//        } 
-//        
-//        // Catches exception in the event that xPosition or yPosition datatypes
-//        // do not match their assignement.
-//        catch (NumberFormatException e) {
-//            return null;
-//        }
-//        
-//        // Creates the chess piece with the checked attributes.
-//        return createChessPiece(isWhite, xPosition, yPosition, pieceAttributes[0].toLowerCase());
-//    }
-    
-    /*
-     * Method that intiates the verification of the ChessPieces' move to the new
-     * positions and prints the results.
-     * @param: An array with ChessPiece objects whose current positions will be compared with
-     *         xPosition and yPosition to determine if the move is valid.
-     * @return: None.
-     * Assume that the x-position is within the range of A-H and the y-position
-     * is within the range of 1-8.
-     */
-//    public static void verifyNewPosition(Object[] chessPieceArr, char xPosition, int yPosition) {
-//        
-//        for (int i = 0; i < chessPieceArr.length; i++) {
-//            String verificationNotifier = "";
-//            String samePositionNotifier = "";
-//            
-//            // Does not verify position if the new poistion matches the current
-//            // position.
-//            if (chessPieceArr[i].getXPosition() == xPosition && chessPieceArr[i].getYPosition() == yPosition) {
-//                samePositionNotifier = " (The piece is already located in the new position) ";
-//                verificationNotifier = "NOT ";
-//            }
-//            else {
-//                if (!chessPieceArr[i].validateMove(xPosition, yPosition)) {
-//                    verificationNotifier = "NOT ";
-//                }
-//            }
-//            
-//            System.out.print(chessPieceArr[i].getName() + " at " + chessPieceArr[i].getXPosition());
-//            System.out.print(", " + chessPieceArr[i].getYPosition() + " can " + verificationNotifier);
-//            System.out.println("move to " + xPosition + ", " + yPosition + samePositionNotifier);
-//        }
-//    }
     public static void printResultStayedInSameSquare(String pieceType, char xPosition, int yPosition) {
         System.out.printf("%s at %c, %d cannot move to %c, %d.\n", pieceType, xPosition, yPosition, xPosition, yPosition);
         System.out.println("The piece did not move!");
     }
     
-    public static void printResult(String currentPosition, boolean canMove, Move position){
+    public static void printResult(String currentPosition, boolean canMove, Coordinates position){
         String canMoveNotifier = "";
         if(!canMove){
             canMoveNotifier = "NOT ";
@@ -387,7 +222,7 @@ public class Maldonado_Nichole_Lab1 {
                     return;
                 }
                 
-                Move position = new Move(newXPosition, newYPosition);
+                Coordinates position = new Coordinates(newXPosition, newYPosition);
                 
                 if (pieceType.equals("pawn")) {
                     Pawn piece = new Pawn(xPosition, yPosition, isWhite);

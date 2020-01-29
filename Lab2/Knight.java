@@ -13,8 +13,8 @@ public class Knight {
     private boolean isWhite;
     
     public Knight(){
-        this.xPosition = Move.MIN_BOARD_X_POSITION;
-        this.yPosition = Move.MIN_BOARD_Y_POSITION;
+        this.xPosition = Coordinates.MIN_BOARD_X_POSITION;
+        this.yPosition = Coordinates.MIN_BOARD_Y_POSITION;
     }
     
     public Knight(int position, boolean isWhite){
@@ -72,8 +72,8 @@ public class Knight {
      * Assume that the x-position is within the range of A-H and the y-position
      * is within the range of 1-8. Assume the piece's name is "Knight".
      */
-    public boolean validateMove(Move position) {
-        return position.moveLShape(this.xPosition, this.yPosition);
+    public boolean validateMove(Coordinates position) {
+        return position.canReachLShape(this.xPosition, this.yPosition);
     }
     
     public String listPosition(){

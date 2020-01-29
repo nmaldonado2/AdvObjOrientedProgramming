@@ -13,8 +13,8 @@ public class Rook {
     private boolean isWhite;
     
     public Rook(){
-        this.xPosition = Move.MIN_BOARD_X_POSITION;
-        this.yPosition = Move.MIN_BOARD_Y_POSITION;
+        this.xPosition = Coordinates.MIN_BOARD_X_POSITION;
+        this.yPosition = Coordinates.MIN_BOARD_Y_POSITION;
     }
     
     public Rook(int position, boolean isWhite){
@@ -72,12 +72,12 @@ public class Rook {
      * Assume that the x-position is within the range of A-H and the y-position
      * is within the range of 1-8. Assume the piece's name is "Rook".
      */
-    public boolean validateMove(Move position) {
+    public boolean validateMove(Coordinates position) {
         
         // Rooks can move vertically or horizontally.
-        return position.moveVertically(this.xPosition, Move.MIN_BOARD_Y_POSITION, 
-            Move.MAX_BOARD_Y_POSITION) || position.moveHorizontally(this.yPosition, 
-            Move.MIN_BOARD_X_POSITION, Move.MAX_BOARD_X_POSITION);
+        return position.canReachVertically(this.xPosition, Coordinates.MIN_BOARD_Y_POSITION, 
+            Coordinates.MAX_BOARD_Y_POSITION) || position.canReachHorizontally(this.yPosition, 
+            Coordinates.MIN_BOARD_X_POSITION, Coordinates.MAX_BOARD_X_POSITION);
     }
     
     public String listPosition(){
