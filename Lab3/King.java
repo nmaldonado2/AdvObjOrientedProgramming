@@ -4,10 +4,8 @@
 /*
  * This class file contains the King class which is a derived class
  * of the Queen class, which inherits from the ChessPiece class
- * and thus inherits all the fields and methods. The class has a static 
- * createKing method which creates a King with a correct
- * initial position. The class also overrides the
- * validMove function but still calls the super's method
+ * and thus inherits all the fields and methods. The class also overrides
+ * the validMove function but still calls the super's method
  * to continue the parameter checks.
  */
 
@@ -23,6 +21,8 @@
 //                               super's method to see if the King can move
 //                               vertically, horizontally, or diagonally.
 // [2/07/20] [Nichole Maldonado] added class to a package to organize all the classes.
+// [2/08/20] [Nichole Maldonado] removed validInitialPosition to allow for the chess
+//                               piece to initially start anywhere.
 
 package edu.nmaldonado2.chesspieces;
 import edu.nmaldonado2.chesspieces.Queen;
@@ -32,11 +32,9 @@ import edu.nmaldonado2.chesspieces.Queen;
  * from the Queen clas, which inherits from the
  * ChessPiece class, which includes name, 
  * xPosition, yPosition, and isWhite. The class
- * paritially overrides the validMove method
- * and includes other functions like
- * validInitialPosition and createKing.
+ * paritially overrides the validMove method.
  */
-public class King extends Queen{
+public class King extends Queen {
     
     /*
      * Constructor for King that uses the super's constructor
@@ -46,7 +44,7 @@ public class King extends Queen{
      * @return: None.
      * Assume the xPosition and yPosition are valid positions within the board.
      */
-    public King (String name, char xPosition, int yPosition, boolean isWhite){
+    public King(String name, char xPosition, int yPosition, boolean isWhite) {
         super(name, xPosition, yPosition, isWhite);
     }
     
@@ -58,35 +56,8 @@ public class King extends Queen{
      * .       denoting a white piece.
      * @return: None.
      */
-    public King(){
+    public King() {
         super("King", 'E', ChessPiece.MIN_Y_POSITION, true);
-    }
-    
-    /*
-     * Method that verifies if a King at xPosition and yPosition
-     * could exist based on the chess board rules.
-     * @param: the xPosition, yPosition, and whether the piece is white
-     *         which will be used to determine if the piece can initially
-     *         start at the positions.
-     * @return: True if a King could start at the x and y positions, false
-     *          otherwise.
-     */
-    private static boolean validInitialPosition(char xPosition, int yPosition, boolean isWhite){
-        return correctRowBasedOnColor(yPosition, isWhite) && xPosition == 'E';
-    }
-    
-    /*
-     * Creates a King object if x position and y position are
-     * valid initial positions.
-     * @param: the name of the King, x and y positions, and a boolean
-     *         denoting whether the piece will be black or white.
-     * @return: a King object if successful, or null otherwise.
-     */
-    public static King createKing(String name, char xPosition, int yPosition, boolean isWhite){
-        if (validInitialPosition(xPosition, yPosition, isWhite)) {
-            return new King(name, xPosition, yPosition, isWhite);
-        }
-        return null;
     }
     
     /*
@@ -95,9 +66,10 @@ public class King extends Queen{
      *         move to.
      * @return: true if the King can move to the new position, false otherwise.
      */
-    public boolean validMove(char xPosition, int yPosition){
-        return super.validMove(xPosition, yPosition) && 
-                this.xDifference(xPosition) <= 1 && 
-                this.yDifference(yPosition) <= 1;
+    @Override
+    public boolean validMove(char xPosition, int yPosition) {
+        return this.xDifference(xPosition) <= 1 && 
+                this.yDifference(yPosition) <= 1 &&
+                super.validMove(xPosition, yPosition);
     }
 }

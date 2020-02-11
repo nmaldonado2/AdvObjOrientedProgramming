@@ -22,6 +22,7 @@
 // [2/07/20] [Nichole Maldonado] changed the ArrayList from storing Generic type T objects
 //                               to ChessPiece derived class objects since the FileReader class
 //                               is using the PieceCreator class.
+// [2/09/20] [Nichole Maldonado] added printUnevaluated method to print the invalidPieces.
 
 package edu.nmaldonado2.fileutil;
 import edu.nmaldonado2.chesspieces.ChessPiece;
@@ -29,7 +30,6 @@ import edu.nmaldonado2.piececreation.PieceCreator;
 
 import java.util.ArrayList;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Scanner;
 import java.io.IOException;
 
@@ -54,7 +54,7 @@ public class FileReader {
      * @param: None.
      * @return: None.
      */
-    public FileReader(){
+    public FileReader() {
         this.validPieces = new ArrayList<ChessPiece>();
         this.invalidPieces = new ArrayList<Integer>();
     }
@@ -64,7 +64,7 @@ public class FileReader {
      * @param: None.
      * @return: a string of a filePath.
      */
-    public String getFilePath(){
+    public String getFilePath() {
         return this.filePath;
     }
     
@@ -73,7 +73,7 @@ public class FileReader {
      * @param: None.
      * @return: an ArrayList of ChessPieces.
      */
-    public ArrayList<ChessPiece> getValidPieces(){
+    public ArrayList<ChessPiece> getValidPieces() {
         return this.validPieces;
     }
     
@@ -82,7 +82,7 @@ public class FileReader {
      * @param: None.
      * @return: an ArrayList of Integers.
      */
-    public ArrayList<Ingeter> getInvalidPieces(){
+    public ArrayList<Integer> getInvalidPieces() {
         return this.invalidPieces;
     }
     
@@ -91,7 +91,7 @@ public class FileReader {
      * @param: a String of a file path.
      * @return: None.
      */
-    public void setFilePath(String filePath){
+    public void setFilePath(String filePath) {
         this.filePath = filePath;
     }
     
@@ -100,7 +100,7 @@ public class FileReader {
      * @param: an ArrayList of ChessPieces.
      * @return: None.
      */
-    public void setValidPieces(ArrayList<ChessPiece> validPieces){
+    public void setValidPieces(ArrayList<ChessPiece> validPieces) {
         this.validPieces = validPieces;
     }
     
@@ -109,7 +109,7 @@ public class FileReader {
      * @param: an ArrayList of Integers.
      * @return: None.
      */
-    public void setInvalidPieces(ArrayList<Integer> invalidPieces){
+    public void setInvalidPieces(ArrayList<Integer> invalidPieces) {
         this.invalidPieces = invalidPieces;
     }
     
@@ -147,7 +147,7 @@ public class FileReader {
     public void retrieveAndAllocatePieces() {
         
         // Cannot read a null filePath.
-        if(this.filePath == null){
+        if (this.filePath == null) {
             System.out.println("Due to an invalid file path, the file will not be read");
             return;
         }
@@ -168,6 +168,7 @@ public class FileReader {
 
                 //Evaluates the line as long as the description is not empty.
                 if (!chessPieceDescription.isEmpty()) {
+                    
                     String[] chessPieceAttributes = chessPieceDescription.split(",");
                     if (chessPieceAttributes.length == 4) {
                         
@@ -200,14 +201,11 @@ public class FileReader {
             fileReader.close();
             
         }
+        
         // Catches exceptions that may occur during file reading.
-        catch (FileNotFoundException e) {
-            System.out.println("\nThe file could not be found. Program terminating.");
+        catch (IOException e) {
+            System.out.print("\nAn error occurred with the file input/output operation.");
         }
-//        catch (IOException e) {
-//            System.out.print("\nAn error occurred with an input/output operation.");
-//            System.out.println(" Program terminating.");
-//        }
     }
     
     /* Ensures that filePath includes a .txt file at the end.
@@ -241,10 +239,10 @@ public class FileReader {
      * @param: the scanner to collect the user's input
      * @return: None.
      */
-    public void collectFilePath(Scanner input){
+    public void collectFilePath(Scanner input) {
         System.out.print("Enter the path for the file that contains the chess pieces: ");
-//        String filePath = input.nextLine();
-        String filePath = "/Users/nichole_maldonado/Desktop/Maldonado_Nichole_Lab3/chess.txt";
+        String filePath = input.nextLine();
+
         if(this.isTxtFile(filePath)){
             this.filePath = filePath;
         }

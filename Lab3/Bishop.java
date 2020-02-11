@@ -4,9 +4,7 @@
 /*
  * This class file contains the Bishop class which is a derived class
  * of the ChessPiece class and thus inherits all
- * the fields and methods. The class has a static 
- * createBishop method which creates a Bishop with a correct
- * initial position. The class also overrides the
+ * the fields and methods. The class also overrides the
  * validMove function but still calls the super's method
  * to continue the parameter checks.
  */
@@ -23,6 +21,8 @@
 //                               but still calls the super's to make sure the
 //                               x and y position are correct.
 // [2/07/20] [Nichole Maldonado] added class to a package to organize all the classes.
+// [2/08/20] [Nichole Maldonado] removed validInitialPosition to allow for the chess
+//                               piece to initially start anywhere.
 
 package edu.nmaldonado2.chesspieces;
 import edu.nmaldonado2.chesspieces.ChessPiece;
@@ -31,9 +31,7 @@ import edu.nmaldonado2.chesspieces.ChessPiece;
  * The Bishop Class inherits all the methods and fields
  * from the ChessPiece class which include name, 
  * xPosition, yPosition, and isWhite. The class
- * paritially overrides the validMove method
- * and includes other functions like
- * validInitialPosition and createBishop.
+ * paritially overrides the validMove method.
  */
 public class Bishop extends ChessPiece {
     
@@ -45,7 +43,7 @@ public class Bishop extends ChessPiece {
      * @return: None.
      * Assume the xPosition and yPosition are valid positions within the board.
      */
-    public Bishop (String name, char xPosition, int yPosition, boolean isWhite){
+    public Bishop (String name, char xPosition, int yPosition, boolean isWhite) {
         super(name, xPosition, yPosition, isWhite);
     }
     
@@ -57,35 +55,8 @@ public class Bishop extends ChessPiece {
      * .       denoting a white piece.
      * @return: None.
      */
-    public Bishop(){
+    public Bishop() {
         super("Bishop", 'C', ChessPiece.MIN_Y_POSITION, true);
-    }
-    
-    /*
-     * Method that verifies if a Bishop at xPosition and yPosition
-     * could exist based on the chess board rules.
-     * @param: the xPosition, yPosition, and whether the piece is white
-     *         which will be used to determine if the piece can initially
-     *         start at the positions.
-     * @return: True if a Bishop could start at the x and y positions, false
-     *          otherwise.
-     */
-    private static boolean validInitialPosition(char xPosition, int yPosition, boolean isWhite){
-        return correctRowBasedOnColor(yPosition, isWhite) && (xPosition == 'C' || xPosition == 'F') ;
-    }
-    
-    /*
-     * Creates a Bishop object if x position and y position are
-     * valid initial positions.
-     * @param: the name of the Bishop, x and y positions, and a boolean
-     *         denoting whether the piece will be black or white.
-     * @return: a Bishop object if successful, or null otherwise.
-     */
-    public static Bishop createBishop(String name, char xPosition, int yPosition, boolean isWhite){
-        if (validInitialPosition(xPosition, yPosition, isWhite)) {
-            return new Bishop(name, xPosition, yPosition, isWhite);
-        }
-        return null;
     }
     
     /*
@@ -94,7 +65,8 @@ public class Bishop extends ChessPiece {
      *         move to.
      * @return: true if the Bishop can move to the new position, false otherwise.
      */
-    public boolean validMove(char xPosition, int yPosition){
+    @Override
+    public boolean validMove(char xPosition, int yPosition) {
         return super.validMove(xPosition, yPosition) && this.moveDiagonally(xPosition, yPosition);
     }
 }

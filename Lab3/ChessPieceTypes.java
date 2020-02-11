@@ -1,5 +1,5 @@
 // Nichole Maldonado
-// CS331 - Lab 2, ChessPieceTypes enum
+// CS331 - Lab 3, ChessPieceTypes enum
 
 /*
  * This enum file contains the ChessPieceTypes enum which defines

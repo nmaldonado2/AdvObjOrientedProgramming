@@ -37,7 +37,7 @@ import java.util.Scanner;
  * and determine if each piece can move to the new
  * x and y positions.
  */
-public class Maldonado_Nichole_Lab3{
+public class Maldonado_Nichole_Lab3 {
     
     /*
      * Method that intiates the verification of the ChessPieces' move to the new
@@ -49,14 +49,18 @@ public class Maldonado_Nichole_Lab3{
      * is within the range of 1-8.
      */
     private static void verifyNewPosition(ArrayList<ChessPiece> chessPieceArr, char xPosition, int yPosition) {
-        
+        boolean foundPosition = false;
         for (int i = 0; i < chessPieceArr.size(); i++) {         
             if (chessPieceArr.get(i).validMove(xPosition, yPosition)) {
+                foundPosition = true;
                 System.out.print(chessPieceArr.get(i).getName() + " at " + chessPieceArr.get(i).getXPosition());
                 System.out.print(", " + chessPieceArr.get(i).getYPosition());
                 System.out.println(" can move to " + xPosition + ", " + yPosition + ".");
-            }
-                        
+            }             
+        }
+        
+        if(!foundPosition){
+            System.out.println("No valid chess piece moves to the position were found.");
         }
     }
     
@@ -68,7 +72,7 @@ public class Maldonado_Nichole_Lab3{
      */ 
     private static char retrieveXPosition(Scanner input) {
         System.out.print("Enter the x - position (A - H): ");
-        String xPositionStr = input.nextLine();
+        String xPositionStr = input.nextLine().replaceAll("\\s+", "");
         
         if (xPositionStr.length() != 1) {
             System.out.print("Invalid x-position. The x-position can only be one character.");
@@ -123,7 +127,7 @@ public class Maldonado_Nichole_Lab3{
      * @param: None.
      * @return: None.
      */
-    public static void main(String[] args){
+    public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
         
         
@@ -134,9 +138,9 @@ public class Maldonado_Nichole_Lab3{
         fileReader.retrieveAndAllocatePieces();
         
         // Retrieves new x and y positions.
-        if(fileReader.getValidPieces().size() > 0){
+        if (fileReader.getValidPieces().size() > 0) {
             char xPosition = retrieveXPosition(input);
-            if(xPosition != 0){
+            if (xPosition != 0) {
 
                 try {
                     int yPosition = retrieveYPosition(input);
@@ -146,7 +150,7 @@ public class Maldonado_Nichole_Lab3{
                         verifyNewPosition(fileReader.getValidPieces(), xPosition, yPosition);
                     }
                 }
-                catch(InputMismatchException e){
+                catch (InputMismatchException e) {
                     System.out.println("Invalid input. Program terminating.");
                 }
             }

@@ -22,6 +22,7 @@
 // [2/07/20] [Nichole Maldonado] add xDifference and yDifference methods to reduce
 //                               code redundancy among inheriting classes.
 // [2/07/20] [Nichole Maldonado] added class to a package to organize all the classes.
+// [2/09/20] [Nichole Maldonado] made all the fields private.
 
 package edu.nmaldonado2.chesspieces;
 
@@ -31,11 +32,11 @@ package edu.nmaldonado2.chesspieces;
  * behavious include validMove, xDifference, and
  * yDifference.
  */
-public abstract class ChessPiece{
-    String name;
-    char xPosition;
-    int yPosition;
-    boolean isWhite;
+public abstract class ChessPiece {
+    private String name;
+    private char xPosition;
+    private int yPosition;
+    private boolean isWhite;
     
     // Constants for the board dimensions.
     public static final char MAX_X_POSITION = 'H';
@@ -52,7 +53,7 @@ public abstract class ChessPiece{
      * @return: None.
      * Assume the x and y positions are within the board's range.
      */
-    public ChessPiece(String name, char xPosition, int yPosition, boolean isWhite){
+    public ChessPiece(String name, char xPosition, int yPosition, boolean isWhite) {
         
         //Creates a unique name with the x and y position appended.
         this.name = name + xPosition + yPosition;
@@ -143,8 +144,8 @@ public abstract class ChessPiece{
      * @return: a boolean if the x and y positions are within the board's
      *          range, false otherwise.
      */
-    public boolean validMove(char xPosition, int yPosition){
-        return (xPosition != this.xPosition) && (yPosition != this.yPosition);
+    public boolean validMove(char xPosition, int yPosition) {
+        return (xPosition != this.xPosition) || (yPosition != this.yPosition);
     }
     
     /*
@@ -154,7 +155,7 @@ public abstract class ChessPiece{
      * @return: the absolute difference of the field xPosition minus the 
      *          local variable xPosition.
      */
-    protected int xDifference(char xPosition){
+    protected int xDifference(char xPosition) {
         return Math.abs(this.xPosition - xPosition);
     }
     
@@ -165,7 +166,7 @@ public abstract class ChessPiece{
      * @return: the absolute difference of the field yPosition minus the 
      *          local variable yPosition.
      */
-    protected int yDifference(int yPosition){
+    protected int yDifference(int yPosition) {
         return Math.abs(this.yPosition - yPosition);
     }
     
@@ -176,7 +177,7 @@ public abstract class ChessPiece{
      * @return: a boolean if the x and y positions can be reached
      *          diagonally from the ChessPiece's current position.
      */
-    protected boolean moveDiagonally(char xPosition, int yPosition){
+    protected boolean moveDiagonally(char xPosition, int yPosition) {
          return this.xDifference(xPosition) == this.yDifference(yPosition);
     }
     
@@ -188,7 +189,8 @@ public abstract class ChessPiece{
      * @return: true if the yPosition is row 1 and the piece will be white
      *          or if the piece will be black and row position is row 8.
      */
-    protected static boolean correctRowBasedOnColor(int yPosition, boolean isWhite){
-        return (isWhite && yPosition == MIN_Y_POSITION) || (!isWhite && yPosition == MAX_Y_POSITION);
+    protected static boolean correctRowBasedOnColor(int yPosition, boolean isWhite) {
+        return (isWhite && yPosition == MIN_Y_POSITION) || 
+                (!isWhite && yPosition == MAX_Y_POSITION);
     }
 }

@@ -53,7 +53,7 @@ public class PieceCreator {
      * @param: None.
      * @return: The ChessPiece piece.
      */
-    public ChessPiece getPiece(){
+    public ChessPiece getPiece() {
         return this.piece;
     }
     
@@ -63,7 +63,7 @@ public class PieceCreator {
      *         to the field piece.
      * @return: None.
      */
-    public void setPiece(ChessPiece piece){
+    public void setPiece(ChessPiece piece) {
         this.piece = piece;
     }
     
@@ -83,7 +83,7 @@ public class PieceCreator {
         ChessPieceTypes pieceType;
         
         // To prevent index out of bounds when parsing the string.
-        if(pieceAttributes[0].length() <= 2){
+        if (pieceAttributes[0].length() <= 2) {
             return;
         }
         
@@ -92,7 +92,7 @@ public class PieceCreator {
         // Y should correspond to the y - position.
         String pieceTypeStr = pieceAttributes[0].substring(0, pieceAttributes[0].length() - 2).toUpperCase();
         
-        try{
+        try {
             
             // Get piece type.
             pieceType = ChessPieceTypes.valueOf(pieceTypeStr);
@@ -101,12 +101,20 @@ public class PieceCreator {
             if (pieceAttributes[2].length() == 1) {
                 xPosition = pieceAttributes[2].toUpperCase().charAt(0);
                 
+                if (xPosition < ChessPiece.MIN_X_POSITION || xPosition > ChessPiece.MAX_X_POSITION) {
+                    return;
+                }
+                
                 // Get the yPosition.
                 yPosition = Integer.parseInt(pieceAttributes[3]);
                 
+                if (yPosition < ChessPiece.MIN_Y_POSITION || yPosition > ChessPiece.MAX_Y_POSITION) {
+                    return;
+                }
+                
                 // Check that the x and y position trailing the piece type match
                 // the xPosition and yPosition.
-                if(pieceAttributes[0].toUpperCase().charAt(pieceAttributes[0].length() - 2) == xPosition &&
+                if (pieceAttributes[0].toUpperCase().charAt(pieceAttributes[0].length() - 2) == xPosition &&
                         Integer.parseInt(String.valueOf(
                         pieceAttributes[0].charAt(pieceAttributes[0].length() - 1))) == yPosition) {
                     
@@ -117,7 +125,16 @@ public class PieceCreator {
                     else if (pieceAttributes[1].toLowerCase().equals("black")) {
                         isWhite = false;
                     }
-                    else{
+                    else {
+                        return;
+                    }
+                    
+                    // Pawn piece can only move forward. Thus, a white pawn can not
+                    // exist at row 1 and a black pawn cannot exist at row 8.
+                    if (pieceType == ChessPieceTypes.PAWN && isWhite && yPosition == ChessPiece.MIN_Y_POSITION) {
+                        return;
+                    }
+                    if(pieceType == ChessPieceTypes.PAWN && !isWhite && yPosition == ChessPiece.MAX_Y_POSITION) {
                         return;
                     }
                     
@@ -148,22 +165,22 @@ public class PieceCreator {
         // Creates a specific ChessPiece based on the pieceType.
         switch (pieceType) {
             case PAWN:
-                this.piece = Pawn.createPawn(pieceType.formatName(), xPosition, yPosition, isWhite);
+                this.piece = new Pawn(pieceType.formatName(), xPosition, yPosition, isWhite);
                 break;
             case ROOK:
-                this.piece = Rook.createRook(pieceType.formatName(), xPosition, yPosition, isWhite);
+                this.piece =  new Rook(pieceType.formatName(), xPosition, yPosition, isWhite);
                 break;
             case KNIGHT:
-                this.piece = Knight.createKnight(pieceType.formatName(), xPosition, yPosition, isWhite);
+                this.piece = new Knight(pieceType.formatName(), xPosition, yPosition, isWhite);
                 break;
             case QUEEN:
-                this.piece = Queen.createQueen(pieceType.formatName(), xPosition, yPosition, isWhite);
+                this.piece = new Queen(pieceType.formatName(), xPosition, yPosition, isWhite);
                 break;
             case BISHOP:
-                this.piece = Bishop.createBishop(pieceType.formatName(), xPosition, yPosition, isWhite);
+                this.piece = new Bishop(pieceType.formatName(), xPosition, yPosition, isWhite);
                 break;
             case KING:
-                this.piece = King.createKing(pieceType.formatName(), xPosition, yPosition, isWhite);
+                this.piece =new King(pieceType.formatName(), xPosition, yPosition, isWhite);
                 break;
             default:
                 break;
