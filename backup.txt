@@ -1,0 +1,104 @@
+// Nichole Maldonado, Lab1 Part1
+//
+// The purpose of part_one_user_interface.c
+// is to allow the user to input a string of data
+// and then display the string of data.
+// The user is able to continue inputting data
+// as long as they do not issue the EOF signal.
+
+#include <stdio.h>
+#include <stdlib.h>
+#define MAXLINE 100
+
+int get_user_input(char **line, int line_length);
+void retrieve_user_input();
+
+/*
+ * Function that retrieves characters from the input
+ * stream and stores them in the character array
+ * pointed to the pointer by line.
+ * input: A pointer to a character pointer which
+ *        can store line_length elements.
+ * output: An integer representing the number of
+ *         characters are pointed to by the pointer
+ *         pointed to by line.
+ */
+int get_user_input(char **line, int line_length){
+  int curr_char;
+  int curr_length = 0;
+
+  for (; (curr_char = getchar()) != EOF && curr_char != '\n'; curr_length++){
+
+    // Reallocate line if the user input is too long.
+    if(curr_length >= line_length - 1){
+
+      line_length += MAXLINE;
+      char *new_line = (char *)realloc(*line, line_length * sizeof(char));
+
+      // Print error if reallocation was not successful.
+      if(new_line == NULL){
+	printf("Error not enough memory. Printing string of current available characters.");
+	(*line)[line_length - 1] = '\0';
+	return curr_length;
+      }
+      else{
+	*line = new_line;
+      }
+    }
+    
+    // Add char to line.
+    (*line)[curr_length] = curr_char;
+  }
+
+  (*line)[curr_length] = '\0';
+
+  // Add one due to the null character.
+  return curr_length + 1;
+}
+
+/*
+ * Function that initiates the retrieving of
+ * characters from the input stream and printing
+ * the characters.
+ * input: None.
+ * output: None.
+ */
+void retrieve_user_input(){
+  char *line = (char *) malloc(MAXLINE * sizeof(char));
+  int line_length;
+  char **line_ptr = &line;
+
+  printf("~$ ");
+
+  // If line_length is 1, then all it has is the null character.
+  while((line_length = get_user_input(line_ptr, MAXLINE)) > 1){
+    printf("%s\n\n", *line_ptr);
+
+    // If more memory was reallocated in get_user_input,
+    // then return shrink the amount of data back to the
+    // standard maxline size.
+    if(line_length > MAXLINE){
+      char* new_line = (char *)realloc(*line_ptr, MAXLINE * sizeof(char));
+      if(new_line == NULL){
+	printf("ERROR: Could not reallocate. Program terminating");
+	return;
+      }
+      *line_ptr = new_line;
+    }
+    printf("~$ ");
+  }
+  printf("\nSession complete\n");
+  free(line);
+  line = NULL;
+}
+
+/*
+ * Main menu that initiates the retrieving
+ * of input of the user and display of the data.
+ * input: None.
+ * output: None.
+ */
+int main(){
+  retrieve_user_input();
+  return 0;
+}
