@@ -1,11 +1,10 @@
 // Nichole Maldonado
-// CS331 - Lab 3, ChessPieceTypes enum
+// CS331 - Lab 4, ChessPieceTypes enum
 
 /*
  * This enum file contains the ChessPieceTypes enum which defines
  * the 6 types of chess pieces. It also includes the function format
- * name which returns a String of the first letter capitalized
- * followed by lower case letters.
+ * name which returns a String of the enum value in lower case.
  */
 
 // changelog

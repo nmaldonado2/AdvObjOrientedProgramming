@@ -1,5 +1,5 @@
 // Nichole Maldonado
-// CS331 - Lab 3, Pawn Class
+// CS331 - Lab 4, Pawn Class
 
 /*
  * This class file contains the Pawn class which is a derived class
@@ -23,6 +23,7 @@
 // [2/07/20] [Nichole Maldonado] added class to a package to organize all the classes.
 // [2/08/20] [Nichole Maldonado] removed validInitialPosition to allow for the chess
 //                               piece to initially start anywhere.
+// [2/29/20] [Nichole Maldonado] allowed pawn to move a maximum of two spaces initially.
 
 package utep.cs3331.lab4.chess.chesspieces;
 import utep.cs3331.lab4.chess.chesspieces.ChessPiece;

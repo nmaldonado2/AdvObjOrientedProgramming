@@ -1,36 +1,34 @@
 // Nichole Maldonado
-// CS331 - Lab 3, ChessPieceTypes enum
+// CS331 - Lab 4, ExpertiseLevel enum
 
 /*
- * This enum file contains the ChessPieceTypes enum which defines
- * the 6 types of chess pieces. It also includes the function format
+ * This enum file contains the ExpertiseLevel enum which defines
+ * the 4 types of expert chess levels. It also includes the function format
  * name which returns a String of the first letter capitalized
  * followed by lower case letters.
  */
 
 // changelog
-// [1/30/20] [Nichole Maldonado] created enum with the 6 different types of 
-//                               chess pieces.
-// [1/30/20] [Nichole Maldonado] created a formatName method to allow the
-//                               chess pieces' classes' name fields to
-//                               be assigned to a proper string.
+// [2/28/20] [Nichole Maldonado] created enum with the 4 different types of 
+//                               user expertise levels
+// [2/28/20] [Nichole Maldonado] created a formatName method to allow the
+//                               colors to be displayed in lower case.
 
 package utep.cs3331.lab4.players;
 
 /*
- * Enum which defines the 6 different chess pieces
+ * Enum which defines the 4 different user expertise levels
  * and the method format name which returns s String of
- * the first letter capitalized followed by lower case letters.
+ * enum value in lower case.
  */
 public enum ExpertiseLevel {
     NOVICE, MEDIUM, ADVANCED, MASTER;
     
     /*
-     * Method that returns a String of the current instances first
-     * letter capitalized followed by lower case letters.
+     * Method that returns a String of the current instances
+     * in lower case.
      * @param: None.
-     * @return: a String of the current instance's first letter capitalized
-     *          followed by lower case letters.
+     * @return: a String of the current instance in lower case.
      */
     public String formatName() {
         return this.name().toLowerCase();

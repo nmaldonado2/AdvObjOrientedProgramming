@@ -1,5 +1,5 @@
 // Nichole Maldonado
-// CS331 - Extra Credit, ChessConfigurations Interface
+// CS331 - Lab4, ChessConfigurations Interface
 
 /*
  * This interface defines the minimum and maximum values

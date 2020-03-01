@@ -1,5 +1,5 @@
 // Nichole Maldonado
-// CS331 - Lab 3, ChessPiece Class
+// CS331 - Lab 4, ChessPiece Class
 
 /*
  * This class file contains the ChessPiece class
@@ -23,6 +23,9 @@
 //                               code redundancy among inheriting classes.
 // [2/07/20] [Nichole Maldonado] added class to a package to organize all the classes.
 // [2/09/20] [Nichole Maldonado] made all the fields private.
+// [2/28/20] [Nichole Maldonado] added pieceInitial to create a string of the piece's intial
+//                               to be used when drawing the board.
+// [2/28/20] [Nichole Maldonado] created move function to update the x and y position.
 
 package utep.cs3331.lab4.chess.chesspieces;
 
@@ -190,6 +193,12 @@ public abstract class ChessPiece implements BoardDimensions{
                 (!isWhite && yPosition == MAX_Y_POSITION);
     }
     
+    /*
+     * Method that creates the initial of the chess piece starting
+     * with first character of the piece's name and the x and y position of the piece.
+     * @param: None.
+     * @return: A string of first character of name + xPosition + yPosition.
+     */
     public String pieceInitial(){
         String initial = (this.isWhite) ? "W" : "B";
         
@@ -198,6 +207,11 @@ public abstract class ChessPiece implements BoardDimensions{
         return initial;
     }
     
+    /*
+     * Method that changes the piece position to the new x and position.
+     * @param: the new x and y position of the piece..
+     * @return: None.
+     */
     public void move(char xPosition, int yPosition) {
         this.setXPosition(xPosition);
         this.setYPosition(yPosition);

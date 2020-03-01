@@ -1,68 +1,91 @@
+// Nichole Maldonado
+// CS331 - Lab 4, FileWriter Class
+
+/*
+ * The FileWritter class solely writes changes to the
+ * xml file. These changes can include updating the
+ * user game key, creating a new game segment, 
+ * removing an old game, or updating a current game.
+ */
+
+// changelog
+// [2/28/20] [Nichole Maldonado] added getters and setters for filePathChess and filePathUsers
+// [2/29/20] [Nichole Maldonado] created writeNewGame, updateGame, and removeOldGame
+//                               to modfiy the relationship between the xml files and the game.
+// [2/29/20] [Nichole Maldonado] refactored redundant code into a method that
+//                               creates an chess template without pieces.
+// [2/29/20] [Nichole Maldonado] created sendToFile which saves changes to the xml file.
+// [3/01/20] [Nichole Maldonado] fixed possible null pointer exceptions in the
+//                               writeNewGame, updateGame, removeOldGame functions.
+// [3/01/20] [Nichole Maldonado] orderer import statements.
+
 package utep.cs3331.lab4.files;
 
-import java.io.File;
-import java.util.Scanner;
-import java.io.IOException;
-import java.util.InputMismatchException;
-import java.io.FileNotFoundException;
-import java.nio.file.Path;
-import java.nio.file.FileSystems;
-import java.io.FileOutputStream;
-import java.io.FileInputStream;
-
-
-import java.text.SimpleDateFormat;
 import java.util.Date;
-
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.util.InputMismatchException;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Scanner;
 
-import utep.cs3331.lab4.files.FilePaths;
-import utep.cs3331.lab4.players.ChessPlayer;
-import utep.cs3331.lab4.chess.chesspieces.ChessPiece;
-import utep.cs3331.lab4.chess.GameController;
-import utep.cs3331.lab4.chess.GameBoard;
 import utep.cs3331.lab4.chess.BoardDimensions;
+import utep.cs3331.lab4.chess.chesspieces.ChessPiece;
+import utep.cs3331.lab4.chess.GameBoard;
+import utep.cs3331.lab4.chess.GameController;
 import utep.cs3331.lab4.files.exceptions.ExceptionHandler;
+import utep.cs3331.lab4.files.FilePaths;
 import utep.cs3331.lab4.files.FileReader;
+import utep.cs3331.lab4.players.ChessPlayer;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.jdom2.input.SAXBuilder;
 import org.jdom2.JDOMException;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-import org.jdom2.input.SAXBuilder;
 
-
-
+/*
+ * The FileWritter class solely writes changes to the
+ * xml file. These changes can include updating the
+ * user game key, creating a new game segment, 
+ * removing an old game, or updating a current game.
+ */
 public class FileWriter implements ExceptionHandler {
     private FilePaths filePaths;
     
+    /*
+     * Default constructor that assigns filePaths
+     * to its field.
+     * Input: The filePaths object.
+     * Output: None.
+     */
     public FileWriter(FilePaths filePaths){
         this.filePaths = filePaths;
     }
     
-//    public void createNewChessTemplate() {
-//
-//        try {
-//            //read the XML file
-//            File inputFile = new File(this.filePaths.getFilePathChess());
-//
-//            //Create a document builder
-//            SAXBuilder saxBuilder = new SAXBuilder();
-//
-//            //Create a DOM tree Obj
-//            Document configFile = saxBuilder.build(inputFile);
-//            Element chessGame = new Element("chess");
-//
-//            configFile.getRootElement().addContent(chessGame);
-//            
-//        } catch (JDOMException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        
-//    }
+    /*
+     * Getter for the filePaths attribute.
+     * Input: None.
+     * Output: The filePaths.
+     */
+    public FilePaths getFilePaths() {
+        return this.filePaths;
+    }
+    
+    /*
+     * Setter for the filePaths attribute.
+     * Input: The new filePaths to be assigned to the current field.
+     * Output: None.
+     */
+    public void setFilePaths(FilePaths filePaths) {
+        this.filePaths = filePaths;
+    }
     
     /*
      * Method that writes a player to an xml file.
@@ -88,17 +111,14 @@ public class FileWriter implements ExceptionHandler {
             
             // Adds user tag to xml.
             Element userInfo = configFile.getRootElement();
-            if (userInfo == null) {
-                userInfo = XmlFileConfigs.createRootUserInfo();
-            }
-            Element user = XmlFileConfigs.createUser();
+            Element user = new Element("user");
             userInfo.addContent(user);
             
             // Creates xml elements and copies information from player.
-            user.addContent(XmlFileConfigs.createName());
-            user.addContent(XmlFileConfigs.createExpertiseLevel());
-            user.addContent(XmlFileConfigs.createUserColor());
-            user.addContent(XmlFileConfigs.createUserGameKey());
+            user.addContent(new Element("name"));
+            user.addContent(new Element("expertise_level"));
+            user.addContent(new Element("user_color"));
+            user.addContent(new Element("user_game_key"));
             
             user.getChild("name").setText(player.getName());
             user.getChild("expertise_level").setText(player.getExpertiseLevel().formatName());
@@ -194,6 +214,7 @@ public class FileWriter implements ExceptionHandler {
             controller.newGame(pieces);
             
             // Adds game and board elements.
+            controller.getGame().setTimeChatSave(input);
             this.createNoPieceGameTemplate(chess, controller);
             
             fileStream.close();
@@ -301,11 +322,17 @@ public class FileWriter implements ExceptionHandler {
     
     private void findUser(String newUserGameKey, String oldUserGameKey, List<Element> users) {
         for (Element user : users) {
-            Element gameKeyElement = user.getChild("user_game_key");
-            System.out.printf("user: %s\n", gameKeyElement.getText());
-            if (gameKeyElement.getText().equals(oldUserGameKey)) {
-                gameKeyElement.setText(newUserGameKey);
-                return;
+            try {
+                Element gameKeyElement = user.getChild("user_game_key");
+                if (gameKeyElement.getText().equals(oldUserGameKey)) {
+                    gameKeyElement.setText(newUserGameKey);
+                    return;
+                }
+            } 
+            // In event user game key does not exist, invalid so remove game entry.
+            catch (NullPointerException e) {
+                Element root = user.getParentElement();
+                root.removeContent(user);
             }
         }
     }

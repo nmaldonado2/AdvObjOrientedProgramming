@@ -3,80 +3,69 @@
 
 /*
  * This class file contains the FileReader class
- * with fields filePath, validPieces, and invalidPieces.
- * The class is mainly used to read a file and store
- * successfully created ChessPiece derived class objects
- * in the validPieces array.
+ * with the field filePaths. This class is solely
+ * used to read from the xml files, find existing user,
+ * create a player based off the xml file, and 
+ * create a game off the xml file.
  */
 
 // changelog
-// [2/07/20] [Nichole Maldonado] created FileReader class to read the file and
-//                               store the successfully created ChessPiece derived
-//                               class objects.
-// [2/07/20] [Nichole Maldonado] added retrieveAndAllocatePieces which was modeled after
-//                               the same function from Lab1.
-// [2/07/20] [Nichole Maldonado] added collectFilePath to get the file path from the user
-//                               immediately.
-// [2/07/20] [Nichole Maldonado] fixed bug with using multiple scanners throughout program
-//                               by passing a scanner to collectFilePath.
-// [2/07/20] [Nichole Maldonado] changed the ArrayList from storing Generic type T objects
-//                               to ChessPiece derived class objects since the FileReader class
-//                               is using the PieceCreator class.
-// [2/09/20] [Nichole Maldonado] added printUnevaluated method to print the invalidPieces.
+// [2/28/20] [Nichole Maldonado] added getters and setters for filePathChess and filePathUsers
+// [2/29/20] [Nichole Maldonado] created createPlayerFromXML, findExistingUsers, populateBoard,
+//                               and fileUpdateController to change or create objects based on
+//                               xml files provided.
+// [2/29/20] [Nichole Maldonado] removed attributes and instead grouped them into a single
+//                               FilePaths object.
+// [2/29/20] [Nichole Maldonado] fixed bug that was not checking to make sure that the
+//                               board and game contained its neccessary attributes.
+// [2/29/20] [Nichole Maldonado] Changed previous exception handling to use method provided
+//                               by exception handling interface.
+// [3/01/20] [Nichole Maldonado] fixed possible null pointer exceptions in findChessPiecesParent
+//                               and populateBoard methods.
+// [3/01/20] [Nichole Maldonado] ordered import statements.
 
 package utep.cs3331.lab4.files;
-//import edu.nmaldonado2.chesspieces.ChessPiece;
-//import edu.nmaldonado2.piececreation.PieceCreator;
-
 
 import java.io.File;
-import java.util.Scanner;
-import java.io.IOException;
 import java.io.FileNotFoundException;
-import java.util.InputMismatchException;
-import java.nio.file.Path;
-import java.nio.file.FileSystems;
-import java.util.Hashtable;
 import java.io.FileInputStream;
-
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.util.Hashtable;
+import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Scanner;
+
+import utep.cs3331.lab4.chess.BoardDimensions;
+import utep.cs3331.lab4.chess.chesspieces.ChessPieceTypes;
+import utep.cs3331.lab4.chess.GameBoard;
+import utep.cs3331.lab4.chess.GameController;
+import utep.cs3331.lab4.files.exceptions.ExceptionHandler;
+import utep.cs3331.lab4.files.FilePaths;
+import utep.cs3331.lab4.files.FileWriter;
+import utep.cs3331.lab4.files.UserCreator;
+import utep.cs3331.lab4.players.ChessPlayer;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+import org.jdom2.JDOMException;
 
-import utep.cs3331.lab4.files.FilePaths;
-import utep.cs3331.lab4.files.FileWriter;
-import utep.cs3331.lab4.files.XmlFileConfigs;
-import utep.cs3331.lab4.chess.GameBoard;
-import utep.cs3331.lab4.chess.GameController;
-import utep.cs3331.lab4.players.ChessPlayer;
-import utep.cs3331.lab4.files.UserCreator;
-import utep.cs3331.lab4.files.DomEditor;
-import utep.cs3331.lab4.files.exceptions.ExceptionHandler;
-import utep.cs3331.lab4.chess.BoardDimensions;
-import utep.cs3331.lab4.chess.chesspieces.ChessPieceTypes;
 /*
- * The class FileReader contains the fields
- * filePath, validPieces, and invalidPieces
- * The main behaviours include retrieve and
- * allocate pieces which reads the files and
- * strips each line of the piece attributes.
- * The FileReader class relies on the PieceCreator
- * class to create a ChessPiece's derived class object
- * with the attributes. These objects are stored in validPieces.
+ * This class file contains the FileReader class
+ * with the field filePaths. This class is solely
+ * used to read from the xml files, find existing user,
+ * create a player based off the xml file, and 
+ * create a game off the xml file.
  */
-public class FileReader implements ExceptionHandler, XmlFileConfigs {
+public class FileReader implements ExceptionHandler {
     private FilePaths filePaths;
     private ChessPlayer player;
     private String userGameKey;
-    //private Element chessGame;
-//    private DomEditor editor;
     
     /*
-     * Default constructor that assigns each field to a
-     * new ArrayList of the designated type.
+     * Default constructor that creates a new FilePath object.
      * @param: None.
      * @return: None.
      */
@@ -84,6 +73,12 @@ public class FileReader implements ExceptionHandler, XmlFileConfigs {
         filePaths = new FilePaths();
     }
     
+    /*
+     * Getter function that returns the player
+     * attribute.
+     * Input: None.
+     * Output: the chess player.
+     */
     public ChessPlayer getPlayer() {
         return player;
     }
@@ -101,14 +96,6 @@ public class FileReader implements ExceptionHandler, XmlFileConfigs {
     public void setUserGameKey(String userGameKey) {
         this.userGameKey = userGameKey;
     }
-    
-//    public DomEditor getDomEditor() {
-//        return this.editor;
-//    }
-//    
-//    public void setDomEditor() {
-//        this.editor = null;
-//    }
     
     /*
      * Getter method for the field filePath
@@ -157,26 +144,20 @@ public class FileReader implements ExceptionHandler, XmlFileConfigs {
             
             // Get the root element
             Element root = configFile.getRootElement();
-            
-            // If the root is not null, continue to parse the file
-            // to try to find the user.
-            if (root != null) {
-                
-                List<Element> users = root.getChildren();
-                
-                // Finds user if they exist.
-                Element user = retrieveUserByName(userName, users);
-                
-                // If the user was successfully found, create and store
-                // the user and game key.
-                if (user != null) {
-                    this.player = UserCreator.createExistingPlayer(userName, input, user);
-                    this.userGameKey = user.getChild("user_game_key").getValue();
-                    fileStream.close();
-                    return true;
-                }
+            List<Element> users = root.getChildren();
+
+            // Finds user if they exist.
+            Element user = retrieveUserByName(userName, users);
+
+            // If the user was successfully found, create and store
+            // the user and game key.
+            if (user != null) {
+                this.player = UserCreator.createExistingPlayer(userName, input, user);
+                this.userGameKey = user.getChild("user_game_key").getValue();
+                fileStream.close();
+                return true;
             }
-            
+
             fileStream.close();
         } 
         
@@ -262,12 +243,7 @@ public class FileReader implements ExceptionHandler, XmlFileConfigs {
 
             // Get the root userInfo element
             Element userInfo = configFile.getRootElement();
-            
-            // Blank file, so prepare to create user.
-            if (userInfo == null) {
-                return true;
-            }
-            
+
             List<Element> userElements= userInfo.getChildren();
             boolean foundMatchingName = false;
             
@@ -332,9 +308,8 @@ public class FileReader implements ExceptionHandler, XmlFileConfigs {
     }
     
     // returns true if board was populated correctly.
-    private boolean populateBoard(GameBoard board, List<Element> chessPieces) {
+    private boolean populateBoard(GameBoard board, List<Element> chessPieces) throws NullPointerException {
         for (Element piece : chessPieces) {
-
             boolean isWhite;
             char xPosition;
             int yPosition;
@@ -373,7 +348,6 @@ public class FileReader implements ExceptionHandler, XmlFileConfigs {
                         isWhite = false;
                     }
                     else {
-                        System.out.println("in here");
                         return false;
                     }
 
@@ -470,17 +444,18 @@ public class FileReader implements ExceptionHandler, XmlFileConfigs {
             System.out.println("A problem occured while loading your chat setting. Chats defaults to disabled.");
             controller.getGame().setHasChat(false);
         }
+
         return true;
     }
     
     /*
-     * Method that returns true if the board does not contain
+     * Method that returns true if the board contains
      * 8 rows and 8 columns.
      * Input: The board element to be evaluated.
      * Output: None.
      */
-    private boolean invalidBoardSize(Element board) {
-        return !board.getChild("rows").equals("8") || !board.getChild("columns").equals("8");
+    private boolean validBoardSize(Element board) {
+        return board.getChild("rows").getText().equals("8") && board.getChild("columns").getText().equals("8");
     }
     
     /*
@@ -521,9 +496,9 @@ public class FileReader implements ExceptionHandler, XmlFileConfigs {
             }
             
             // If the board contained improper syntax,the board will be erased.
-            if (invalidBoardSize(chess.getChild("board")) || 
+            if (!validBoardSize(chess.getChild("board")) || 
                     !populateBoard(controller.getBoard(), chess.getChild("pieces").getChildren("piece")) ||
-                    this.fileUpdateController(chess.getChild("game"), controller)) {
+                    !this.fileUpdateController(chess.getChild("game"), controller)) {
                 
                 System.out.println("The loaded game contained incorrect syntax.");
                 System.out.println("The game will be overwritten.");

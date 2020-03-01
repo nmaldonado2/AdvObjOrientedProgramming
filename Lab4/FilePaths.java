@@ -1,38 +1,72 @@
+// Nichole Maldonado
+// CS331 - Lab 4, FilePaths Class
+
+/*
+ * The FilePaths class contains a filePathUsers
+ * and filePathChess attribute which contain the
+ * file directory for the xml user and chess files.
+ * Available methods include setters and getters
+ * for the fields.
+ */
+
+// changelog
+// [2/29/20] [Nichole Maldonado] refactored code by creating a single
+//                               filePath that will store the file paths
+//                               for the user and chess xml at any time.
+// [2/29/20] [Nichole Maldonado] Created getters and setters for the attributes.
+
 package utep.cs3331.lab4.files;
 
 import java.util.Scanner;
 
+/*
+ * The FilePaths class contains a filePathUsers
+ * and filePathChess attribute which contain the
+ * file directory for the xml user and chess files.
+ * Available behaviours include setters and getters
+ * for the fields.
+ */
 public class FilePaths {
     private String filePathUsers;
     private String filePathChess;
     
     /*
-     * Getter method for the field filePath
+     * Getter method for the field filePathUsers.
      * @param: None.
-     * @return: a string of a filePath.
+     * @return: a string of filePathUsers.
      */
     public String getFilePathUsers() {
         return this.filePathUsers;
     }
     
     /*
-     * Getter method for the field filePath
+     * Getter method for the field filePathChess
      * @param: None.
-     * @return: a string of a filePath.
+     * @return: a string of filePathChess.
      */
     public String getFilePathChess() {
         return this.filePathChess;
     }
     
+    /*
+     * Setter method for the field filePathChess.
+     * Input: a new file path to be assigned to filePathChess.
+     * Output: None.
+     */
     public void setFilePathChess(String filePathChess) {
         this.filePathChess = filePathChess;
     }
     
+    /*
+     * Setter method for the field filePathUsers.
+     * Input: a new file path to be assigned to filePathUsers.
+     * Output: None.
+     */
     public void setFilePathUsers(String filePathUsers) {
         this.filePathUsers = filePathUsers;
     }
     
-        /* Ensures that filePath includes a .txt file at the end.
+    /* Ensures that filePath includes a .txt file at the end.
      * @param: a string of the file path that will be evaluated.
      * @return: Returns false if filePath does not end in .txt and returns
      *        true otherwise.  
@@ -57,19 +91,12 @@ public class FilePaths {
         return false;
     }
     
-//    public void setDefaultFilePath(String errorMessage){
-//        Path path = FileSystems.getDefault().getPath(".").toAbsolutePath();
-////        Path currentRelativePath = Paths.get("");
-//        this.filePath = path.toString();
-//        this.filePath = this.filePath.substring(0, this.filePath.length() - 1) + "chessinfo.xml";
-//        
-//        System.out.printf("Due to %s, a new XML document will be created in: %s\n", errorMessage, this.filePath);
-//    }
-    
     /*
      * Method that collects a file path from the user and
-     * if it is valid assigns the field filePath to the filePath.
-     * @param: the scanner to collect the user's input
+     * if it is valid assigns the field filePath to the corresponding
+     * filePath.
+     * @param: the scanner to collect the user's input. fileType 
+     *         is either chess for filePathChess or user for filePathUsers.
      * @return: None.
      */
     public void collectFilePath(Scanner input, String fileType) {

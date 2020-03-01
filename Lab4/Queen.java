@@ -1,5 +1,5 @@
 // Nichole Maldonado
-// CS331 - Lab 3, Queen Class
+// CS331 - Lab 4, Queen Class
 
 /*
  * This class file contains the Queen class which is a derived class

@@ -1,5 +1,5 @@
 // Nichole Maldonado
-// CS331 - Lab 3, Rook Class
+// CS331 - Lab 4, Rook Class
 
 /*
  * This class file contains the Rook class which is a derived class

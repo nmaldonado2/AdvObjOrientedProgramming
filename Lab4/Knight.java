@@ -1,5 +1,5 @@
 // Nichole Maldonado
-// CS331 - Lab 3, Knight Class
+// CS331 - Lab 4, Knight Class
 
 /*
  * This class file contains the Knight class which is a derived class
@@ -23,6 +23,8 @@
 // [2/07/20] [Nichole Maldonado] added class to a package to organize all the classes.
 // [2/08/20] [Nichole Maldonado] removed validInitialPosition to allow for the chess
 //                               piece to initially start anywhere.
+// [2/28/20] [Nichole Maldonado] overrode pieceInitial to create a string of the piece's intial
+//                               to be used when drawing the board.
 
 package utep.cs3331.lab4.chess.chesspieces;
 import utep.cs3331.lab4.chess.chesspieces.ChessPiece;
@@ -79,6 +81,12 @@ public class Knight extends ChessPiece {
                 (xDifference == 1 && yDifference == 2));
     }
     
+    /*
+     * Method that creates the initial of the chess piece starting
+     * with "Kn" and then the x position and y position of the piece.
+     * @param: None.
+     * @return: A string of "Kn" + xPosition + yPosition.
+     */
     @Override
     public String pieceInitial() {
         
