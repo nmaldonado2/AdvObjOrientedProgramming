@@ -33,6 +33,6 @@ public enum Color {
      *          followed by lower case letters.
      */
     public String formatName() {
-        return this.name().substring(0, 1).toUpperCase() + this.name().substring(1).toLowerCase();
+        return this.name().toLowerCase();
     }
 }

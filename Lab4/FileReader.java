@@ -32,10 +32,12 @@ package utep.cs3331.lab4.files;
 import java.io.File;
 import java.util.Scanner;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.util.InputMismatchException;
 import java.nio.file.Path;
 import java.nio.file.FileSystems;
 import java.util.Hashtable;
+import java.io.FileInputStream;
 
 import java.util.List;
 
@@ -44,8 +46,17 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
+import utep.cs3331.lab4.files.FilePaths;
+import utep.cs3331.lab4.files.FileWriter;
+import utep.cs3331.lab4.files.XmlFileConfigs;
+import utep.cs3331.lab4.chess.GameBoard;
+import utep.cs3331.lab4.chess.GameController;
 import utep.cs3331.lab4.players.ChessPlayer;
 import utep.cs3331.lab4.files.UserCreator;
+import utep.cs3331.lab4.files.DomEditor;
+import utep.cs3331.lab4.files.exceptions.ExceptionHandler;
+import utep.cs3331.lab4.chess.BoardDimensions;
+import utep.cs3331.lab4.chess.chesspieces.ChessPieceTypes;
 /*
  * The class FileReader contains the fields
  * filePath, validPieces, and invalidPieces
@@ -56,10 +67,12 @@ import utep.cs3331.lab4.files.UserCreator;
  * class to create a ChessPiece's derived class object
  * with the attributes. These objects are stored in validPieces.
  */
-public class FileReader {
-    private String filePath;
+public class FileReader implements ExceptionHandler, XmlFileConfigs {
+    private FilePaths filePaths;
     private ChessPlayer player;
-    private Element chessGame;
+    private String userGameKey;
+    //private Element chessGame;
+//    private DomEditor editor;
     
     /*
      * Default constructor that assigns each field to a
@@ -67,242 +80,490 @@ public class FileReader {
      * @param: None.
      * @return: None.
      */
-    public FileReader() {}
+    public FileReader() {
+        filePaths = new FilePaths();
+    }
     
     public ChessPlayer getPlayer() {
         return player;
     }
     
-    public Element getChessGame() {
-        return chessGame;
+    /*
+     * Getter function that returns the userGameKey
+     * attribute.
+     * Input: None.
+     * Output: a string of the userGameKey.
+     */
+    public String getUserGameKey() {
+        return this.userGameKey;
     }
+    
+    public void setUserGameKey(String userGameKey) {
+        this.userGameKey = userGameKey;
+    }
+    
+//    public DomEditor getDomEditor() {
+//        return this.editor;
+//    }
+//    
+//    public void setDomEditor() {
+//        this.editor = null;
+//    }
     
     /*
      * Getter method for the field filePath
      * @param: None.
      * @return: a string of a filePath.
      */
-    public String getFilePath() {
-        return this.filePath;
+    public FilePaths getFilePaths() {
+        return this.filePaths;
     }
     
-    public void findExistingUser(Scanner input) {
+    /*
+     * Method that returns the user with the corresponding
+     * userName.
+     * Input: the user's name to find and a list of users.
+     * Output: The user with the userName if found, or null otherwise.
+     */
+    private Element retrieveUserByName(String userName, List<Element> users) {
+        for (Element user : users) {
+            Element userNameElement = user.getChild("name");
+            if (userNameElement != null && userNameElement.getValue().equals(userName)) {
+                return user;   
+            }
+        }
+        return null;
+    }
+    
+    /* Method that finds an existing user based on the 
+     * the user name collected.
+     * Input: Scanner to retrieve user input.
+     * Output: True if a user name was finally found.
+     *         false is returned otherwise.
+     */
+    public boolean findExistingUser(Scanner input) {
         String userName = UserCreator.getUserName(input);
         
         try {
-            //read the XML file
-            File inputFile = new File(this.filePath);
+            // Read the XML file
+            File inputFile = new File(this.filePaths.getFilePathUsers());
+            FileInputStream fileStream = new FileInputStream(inputFile);
 
             //Create a document builder
             SAXBuilder saxBuilder = new SAXBuilder();
 
             //Create a DOM tree Obj
-            Document configFile = saxBuilder.build(inputFile);
-
-            //get the root element
+            Document configFile = saxBuilder.build(fileStream);
+            
+            // Get the root element
             Element root = configFile.getRootElement();
-            List<Element> rootChildren = root.getChildren();
             
-            for (Element piece : rootChildren) {
-                List<Element> usersList = piece.getChildren("user");
-                for (int i = 0; i < usersList.size(); i++) {
-                    if (usersList.get(i).getChild("name").getValue().toLowerCase().equals(userName.toLowerCase())) {
-                        this.player = UserCreator.createExistingPlayer(userName, input, usersList.get(i));
-                        this.chessGame = usersList.get(i);
-                        return;   
-                    }
-                }
-            }
-        } catch (JDOMException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
-        System.out.println("The specified username was not found so a new user will be created.");
-        this.player = UserCreator.createPlayer(userName, input);
-    }
-    
-    // ask if new or existing.
-    // if existing get user name
-    // if not existing create user
-    // then extract name from new user obj
-    // now i have a string with the name in 
-    // both scenarios
-    
-    // when creating new user get user info
-    // iterate through xml file while hashing
-    // if you find name, mark as found
-    // but finish hashing. then ask user
-    // for new names while checking hash table
-    //
-    
-    public void writeNewUserToXML(Scanner input) {
-        String userName = UserCreator.getUserName(input);
-        
-        Hashtable<String, Element> users = new Hashtable<String, Element>();
-        
-        try {
-            //read the XML file
-            File inputFile = new File(this.filePath);
-
-            //Create a document builder
-            SAXBuilder saxBuilder = new SAXBuilder();
-
-            //Create a DOM tree Obj
-            Document configFile = saxBuilder.build(inputFile);
-
-            //get the root element
-            Element root = configFile.getRootElement();
-            List<Element> rootChildren = root.getChildren();
-            
-            boolean foundMatchingName = false;
-            
-            for (Element piece : rootChildren) {
-                List<Element> usersList = piece.getChildren("user");
-                for (int i = 0; i < usersList.size(); i++) {
-                    if (usersList.get(i).getChild("name").getValue().toLowerCase().equals(userName.toLowerCase())) {
-                        foundMatchingName = true;
-                    }
-//                    System.out.printf("%s\n", usersList.get(i).getChild("name").getValue());
-                    users.put(usersList.get(i).getChild("name").getValue().toLowerCase(), piece);
-                }
-            }
-            
-            if (foundMatchingName) {
-                userName = UserCreator.resolveMatchingUserNames(users, input);
-            }
-            if (userName != null) {
-                this.player = UserCreator.createPlayer(userName, input);
-            }
-
-        } catch (JDOMException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            System.out.println("A problem occured with the input/output. Would you: ");
-            System.out.println("1. Try again");
-            System.out.println("2. Quit");
-            try {
-                int menuNum = input.nextInt();
-                if (menuNum == 1) {
-                    this.collectFilePath(input);
-                }
-                else if (menuNum != 2) {
-                    throw new InputMismatchException();
-                }
-            }
-            catch(InputMismatchException o){
-                System.out.println("Invalid input. Program terminating.");
-            }
-        }
-    }
-    
-    public void paseXMLFile() {
-//        try {
-//            //read the XML file
-//            File inputFile = new File("ChessConfig.xml");
-//
-//            //Create a document builder
-//            SAXBuilder saxBuilder = new SAXBuilder();
-//
-//            //Create a DOM tree Obj
-//            Document configFile = saxBuilder.build(inputFile);
-//
-//            //get the root element
-//            Element root = configFile.getRootElement();
-//            List<Element> rootChildren = root.getChildren();
-//            Element pieces = root.getChildren().get(0);
-//            List<Element> listPieces = pieces.getChildren();
-//            for (Element piece: listPieces ) {
-//                System.out.println(piece.getAttributeValue("color"));
-//                System.out.println(piece.getAttributeValue("locationX"));
-//                System.out.println(piece.getAttributeValue("locationY"));
-//                System.out.println(piece.getAttributeValue("play"));
-//                System.out.println(piece.getValue()+"\n");
-//            }
-//            //read the board config
-//            Element boardSize = root.getChild("board");
-//            System.out.println(boardSize.getChild("rows").getValue() +", "+ boardSize.getChild("columns").getValue());
-//
-//            //read users profile
-//            List<Element> Users = root.getChildren("user");
-//
-//            for (Element user :Users) {
-//                System.out.println(user.getChild("name").getValue());
-//                System.out.println(user.getChild("expertise_level").getValue());
-//                System.out.println(user.getChild("user_color").getValue());
-//
-//            }
-//
-//        } catch (JDOMException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-        
-    }
-   
-    
-    /* Ensures that filePath includes a .txt file at the end.
-     * @param: a string of the file path that will be evaluated.
-     * @return: Returns false if filePath does not end in .txt and returns
-     *        true otherwise.  
-     */              
-    private boolean isXmlFile(String filePath) {
+            // If the root is not null, continue to parse the file
+            // to try to find the user.
+            if (root != null) {
                 
-        // Returns false if the filePath does not have at least 5 letters since a
-        // valid .txt file name can have a minimum of 5 letters.
-        if (filePath.length() < 5) {
-            System.out.print("\nInvalid file. The file must be a .xml file with at ");
-            System.out.println("least a one character name.");
+                List<Element> users = root.getChildren();
+                
+                // Finds user if they exist.
+                Element user = retrieveUserByName(userName, users);
+                
+                // If the user was successfully found, create and store
+                // the user and game key.
+                if (user != null) {
+                    this.player = UserCreator.createExistingPlayer(userName, input, user);
+                    this.userGameKey = user.getChild("user_game_key").getValue();
+                    fileStream.close();
+                    return true;
+                }
+            }
+            
+            fileStream.close();
+        } 
+        
+        // Allows user to redo method if an exception occured.
+        catch (JDOMException e) {
+            if (ExceptionHandler.handleException("attempting to build the DOM tree", "Try again", input)) {
+                return findExistingUser(input);
+            }
+            return false;
+        } 
+        catch (FileNotFoundException e) {
+            if (ExceptionHandler.handleException("trying to find the user xml file", "Enter new file", input)) {
+                
+                // Update user file path and recall the method.
+                this.filePaths.collectFilePath(input, "user");
+                return findExistingUser(input);
+            }
+            return false;
+        }
+        catch (IOException e) {
+            if (ExceptionHandler.handleException("the file's input/output", "Try again", input)) {
+                return findExistingUser(input);
+            }
             return false;
         }
         
-        // If the length of filePath is greater than or equal to 5, then true is
-        // returned only if filePath ends in ".txt".
-        if (filePath.substring(filePath.length() - 4).equals(".xml")) {
-            return true;
+        // Re-enter user name in worst case.
+        System.out.println("The specified username could not be found");
+        if (UserCreator.reEnterUserName(input)){
+            return findExistingUser(input);
         }
-                
-        System.out.println("\nInvalid file. The file must be a .xml file.");
         return false;
     }
     
-//    public void setDefaultFilePath(String errorMessage){
-//        Path path = FileSystems.getDefault().getPath(".").toAbsolutePath();
-////        Path currentRelativePath = Paths.get("");
-//        this.filePath = path.toString();
-//        this.filePath = this.filePath.substring(0, this.filePath.length() - 1) + "chessinfo.xml";
-//        
-//        System.out.printf("Due to %s, a new XML document will be created in: %s\n", errorMessage, this.filePath);
-//    }
+    /*
+     * Method that populates a hash table with users and 
+     * returns true if the userName was never found.
+     * Input: the user's name to find, a list of users,
+     *        and a potential hash table to store the users.
+     * Output: The user with the userName if found, or null otherwise.
+     */
+    private boolean userDoesNotExist(String userName, List<Element> users, Hashtable<String, String> userStorage) {
+        boolean userNotFound = true;
+        
+        for (Element user : users) {
+            Element userNameElement = user.getChild("name");
+            if (userNameElement != null) {
+                
+                // Hashes users in case a user is found. In which case, the user names
+                // will need to be compared with the new user names that the user selects.
+                userStorage.put(userNameElement.getValue(), userNameElement.getValue());    
+                
+                if (userNameElement.getValue().equals(userName)) {
+                    userNotFound = false;   
+                }  
+            }                   
+        }
+        return userNotFound;
+    }
     
     /*
-     * Method that collects a file path from the user and
-     * if it is valid assigns the field filePath to the filePath.
-     * @param: the scanner to collect the user's input
-     * @return: None.
+     * Method that reads an xml file to ensure that a user name
+     * does not already exist before creating the player.
+     * Input: The scanner to retrieve the user input.
+     * Output: None.
      */
-    public void collectFilePath(Scanner input) {
-        int num_tries = 5;
-        boolean found_path = false;
+    public boolean createPlayerFromXML(Scanner input) {
+        String userName = UserCreator.getUserName(input);
         
-        while (num_tries > 0 && !found_path) {
-            System.out.print("Enter the path for the xml file: ");
-            String filePath = input.nextLine();
+        Hashtable<String, String> userHash = new Hashtable<String, String>();
+        
+        try {
             
-            found_path = this.isXmlFile(filePath);
-            if(found_path){
-                this.filePath = filePath;
+            // Read the XML file
+            File inputFile = new File(this.filePaths.getFilePathUsers());
+            FileInputStream fileStream = new FileInputStream(inputFile);
+
+            // Create a document builder
+            SAXBuilder saxBuilder = new SAXBuilder();
+
+            // Create a DOM tree Obj
+            Document configFile = saxBuilder.build(fileStream);
+
+            // Get the root userInfo element
+            Element userInfo = configFile.getRootElement();
+            
+            // Blank file, so prepare to create user.
+            if (userInfo == null) {
+                return true;
             }
+            
+            List<Element> userElements= userInfo.getChildren();
+            boolean foundMatchingName = false;
+            
+            boolean userNotFound = userDoesNotExist(userName, userElements, userHash);
+            
+            // If the user was found, then the discrepcies among the user needs
+            // to be fixed.
+            if (!userNotFound) {
+                userName = UserCreator.resolveMatchingUserNames(userHash, input);
+            }
+            
+            // If userName is not null, then a new user is ready to be created.
+            if (userName != null) {
+                this.player = UserCreator.createPlayer(userName, input);
+            }
+            
+            // If userName is null, then user wants to quit.
             else {
-                num_tries--;
-                System.out.printf("Number of tries left: %d\n\n", num_tries);
+                return false;
             }
+
+        } 
+        catch (JDOMException e) {
+            if (ExceptionHandler.handleException("attempting to build the DOM tree", "Try again", input)) {
+                return createPlayerFromXML(input);
+            }
+            return false;
+        } 
+        catch (FileNotFoundException e) {
+            if (ExceptionHandler.handleException("trying to find the user xml file", "Enter new file", input)) {
+                this.filePaths.collectFilePath(input, "user");
+                return createPlayerFromXML(input);
+            }
+            return false;
+        }
+        catch (IOException e) {
+            if (ExceptionHandler.handleException("the file's input/output", "Try again", input)) {
+                return createPlayerFromXML(input);
+            }
+            return false;
+        }
+        return true;
+    }
+    
+    /*
+     * Method that returns the parent element of the game with the
+     * provided id.
+     * Input: the id to be searched for the chess games to 
+     *        searched through.
+     * Output: the parent of the game with the provided id if found or
+     *         null otherwise.
+     * A NullPointer exception may occur if the chess game does not have
+     * a game or id element.
+     */
+    private Element findChessPiecesParent(String id, List<Element> chess) throws NullPointerException {
+        for (Element chessGame : chess) {
+            if (chessGame.getChild("game").getChild("id").getText().equals(id)) {
+                return chessGame;
+            }
+        }
+        return null;
+    }
+    
+    // returns true if board was populated correctly.
+    private boolean populateBoard(GameBoard board, List<Element> chessPieces) {
+        for (Element piece : chessPieces) {
+
+            boolean isWhite;
+            char xPosition;
+            int yPosition;
+            ChessPieceTypes pieceType;
+
+            // The file is expected to have the type in the form of
+            // pieceNameXY where X should correspond to the x - position and
+            // Y should correspond to the y - position.
+            String pieceTypeStr = piece.getText().toUpperCase();
+
+            try {
+
+                // Get piece type.
+                pieceType = ChessPieceTypes.valueOf(pieceTypeStr);
+
+                // Get the xPosition.
+                if (piece.getAttribute("locationX").getValue().length() == 1) {
+                    xPosition = piece.getAttribute("locationX").getValue().toUpperCase().charAt(0);
+
+                    if (xPosition < BoardDimensions.MIN_X_POSITION || xPosition > BoardDimensions.MAX_X_POSITION) {
+                        return false;
+                    }
+
+                    // Get the yPosition.
+                    yPosition = Integer.parseInt(piece.getAttribute("locationY").getValue());
+
+                    if (yPosition < BoardDimensions.MIN_Y_POSITION || yPosition > BoardDimensions.MAX_Y_POSITION) {
+                        return false;
+                    }
+
+                    //Get isWhite.
+                    if (piece.getAttribute("color").getValue().toLowerCase().equals("white")) {
+                        isWhite = true;   
+                    }
+                    else if (piece.getAttribute("color").getValue().toLowerCase().equals("black")) {
+                        isWhite = false;
+                    }
+                    else {
+                        System.out.println("in here");
+                        return false;
+                    }
+
+                    // Pawn piece can only move forward. Thus, a white pawn can not
+                    // exist at row 1 and a black pawn cannot exist at row 8.
+                    if (pieceType == ChessPieceTypes.PAWN && isWhite && yPosition == BoardDimensions.MIN_Y_POSITION) {
+                        return false;
+                    }
+                    if(pieceType == ChessPieceTypes.PAWN && !isWhite && yPosition == BoardDimensions.MAX_Y_POSITION) {
+                        return false;
+                    }
+
+                    // Create the new, specific ChessPiece.
+                    board.addChessPiece(pieceType, xPosition, yPosition, isWhite);
+                } 
+                else {
+                    return false;
+                }
+            }
+
+            // Catches exception but does not print error. If an exception is caught,
+            // then it signals that the piece attribute should remain untouched.
+            catch(NumberFormatException e){
+                return false;
+            }
+            catch(IllegalArgumentException e){
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    /*
+     * Method that updates the controller's game attributes based 
+     * on the game element.
+     * Input: The controller, whose game attributes will be updated,
+     *        and the game element.
+     * Output: true if the element did not contain any false values
+     *         and was able to update the controller successfully, 
+     *         or false is otherwise returned.
+     */
+    private boolean fileUpdateController(Element game, GameController controller) {
+        
+        // Check and update autosave.
+        try {
+            String autoSaveLabel = game.getChild("auto_save").getText().toLowerCase();
+            
+            // Auto-save can only be active or inactive.
+            boolean useAutoSave = false;
+            if (autoSaveLabel.equals("active")) {
+                useAutoSave = true;
+            }
+            else if (!autoSaveLabel.equals("inactive")) {
+                System.out.println("Auto save can only be active or inactive.");
+                return false;
+            }
+            controller.getGame().setUseAutoSave(useAutoSave); 
+        }
+        catch (NullPointerException e) {
+            System.out.println("A problem occured while loading your auto-save setting. Auto-save defaults to inactive.");
+            controller.getGame().setUseAutoSave(false);
         }
         
-        if(!found_path){
-            System.out.println("Exceeded tries. Please try again later.");
+        // Check and update max time.
+        try {
+            int maxTime = Integer.parseInt(game.getChild("max_time").getText());
+            
+            // maxTime can only be in the range [1, 100].
+            if (maxTime < 1 || maxTime > 100) {
+                System.out.println("Max time can only be in the range from [1, 100]");
+                return false;
+            }
+            controller.getGame().setMaxTime(maxTime); 
         }
+        catch (NullPointerException e) {
+            System.out.println("A problem occured while loading your max-time setting. Max-time defaults to 30 minutes.");
+            controller.getGame().setMaxTime(30);
+        }
+        
+        // Check and update chat.
+        try {
+            String hasChatLabel = game.getChild("chat").getText().toLowerCase();
+            boolean hasChat = false;
+            if (hasChatLabel.equals("enable")) {
+                hasChat = true;
+            }
+            else if (!hasChatLabel.equals("disable")) {
+                System.out.println("Chat can only be disable or enable");
+                return false;
+            }
+            controller.getGame().setHasChat(hasChat); 
+        }
+        catch (NullPointerException e) {
+            System.out.println("A problem occured while loading your chat setting. Chats defaults to disabled.");
+            controller.getGame().setHasChat(false);
+        }
+        return true;
+    }
+    
+    /*
+     * Method that returns true if the board does not contain
+     * 8 rows and 8 columns.
+     * Input: The board element to be evaluated.
+     * Output: None.
+     */
+    private boolean invalidBoardSize(Element board) {
+        return !board.getChild("rows").equals("8") || !board.getChild("columns").equals("8");
+    }
+    
+    /*
+     * Method that creates the game board based on an id. 
+     * Input: The controller which contains the id and board,
+     *        a scanner to retrieve input, and the file writer
+     *        to make changes to the xml in the event that improper xml structure
+     *        or exceptions occur.
+     * Output: false if the user decided to quit the game due to an exception, or
+     *         true otherwise.
+     */
+    public boolean fileToBoard(GameController controller, Scanner input, FileWriter fileWriter) {
+
+        try {
+            
+            // Read the XML file
+            File inputFile = new File(this.filePaths.getFilePathChess());
+            FileInputStream fileStream = new FileInputStream(inputFile);
+
+            //Create a document builder
+            SAXBuilder saxBuilder = new SAXBuilder();
+
+            //Create a DOM tree Obj
+            Document configFile = saxBuilder.build(fileStream);
+            
+            // Get the root element
+            Element chessGame = configFile.getRootElement();
+            List<Element> rootChildren = chessGame.getChildren();
+            
+            Element chess = findChessPiecesParent(controller.getGame().getId(), rootChildren);
+        
+            if (chess == null) {
+                System.out.println("The loaded game does not exist.");
+                System.out.println("A new game will be created.");
+                fileStream.close();
+                fileWriter.writeNewGame(controller, input);
+                return true;
+            }
+            
+            // If the board contained improper syntax,the board will be erased.
+            if (invalidBoardSize(chess.getChild("board")) || 
+                    !populateBoard(controller.getBoard(), chess.getChild("pieces").getChildren("piece")) ||
+                    this.fileUpdateController(chess.getChild("game"), controller)) {
+                
+                System.out.println("The loaded game contained incorrect syntax.");
+                System.out.println("The game will be overwritten.");
+                fileStream.close();
+                fileWriter.removeOldGame(controller.getGame().getId(), input);
+                fileWriter.writeNewGame(controller, input);
+            }      
+            
+            fileStream.close();
+        } 
+        
+        // Recalls the method if an exception occurs.
+        catch (JDOMException e) {
+            if (ExceptionHandler.handleException("attempting to build the DOM tree", "Try again", input)) {
+                return fileToBoard(controller, input, fileWriter);
+            }
+            return false;
+        } 
+        
+        // Changes file path if the user user decides to.
+        catch (FileNotFoundException e) {
+            if (ExceptionHandler.handleException("trying to find the chess xml file", "Enter new file", input)) {
+                this.filePaths.collectFilePath(input, "user");
+                return fileToBoard(controller, input, fileWriter);
+            }
+            return false;
+        }
+        catch (IOException e) {
+            if (ExceptionHandler.handleException("the file's input/output", "Try again", input)) {
+                return fileToBoard(controller, input, fileWriter);
+            }
+            return false;
+        }
+        catch (NullPointerException e) {
+            System.out.println("The syntax of the game was incorrect or missing element.");
+            System.out.println("The game will be overwritten with a new game.");
+            
+            fileWriter.removeOldGame(controller.getGame().getId(), input);
+            fileWriter.writeNewGame(controller, input);
+        }
+        return true;
     }
 }

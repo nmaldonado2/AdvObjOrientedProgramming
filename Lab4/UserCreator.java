@@ -10,7 +10,6 @@ import utep.cs3331.lab4.players.Color;
 import utep.cs3331.lab4.players.ExpertiseLevel;
 
 public class UserCreator{
-    private ChessPlayer user;
     
     // True if existing user, false for new user.
     public static boolean determineUserExistence(Scanner input){
@@ -20,15 +19,17 @@ public class UserCreator{
         while (numTries > 0) {
             System.out.println("1. New User");
             System.out.println("2. Existing User");
-            System.out.println("Select 1 or 2: ");
+            System.out.print("Select 1 or 2: ");
             try {
                 userSelection = input.nextInt();
                 input.nextLine();
             }
             catch (InputMismatchException e) {
-                System.out.println("Invalid user selection. Please Try again");
                 input.nextLine();
+                System.out.println("Invalid user selection. Please Try again");
+                userSelection = -1;
             }
+            System.out.println();
             if (userSelection == 1) {
                 return false;
             }
@@ -37,7 +38,7 @@ public class UserCreator{
             }
             else {
                 numTries--;
-                System.out.printf("Number of tries left: %d\n", numTries);
+                System.out.printf("Number of tries left: %d\n\n", numTries);
                 userSelection = -1;
             }
         }
@@ -47,19 +48,69 @@ public class UserCreator{
         return false;
     }
     
+    public static boolean reEnterUserName(Scanner input) {
+        int numTries = 5;
+        int userSelection = -1;
+        
+        while (numTries > 0) {
+            System.out.println("\nWould you like to:");
+            System.out.println("1. Re-enter username");
+            System.out.println("2. Quit");
+            System.out.print("Select 1 or 2: ");
+            try {
+                userSelection = input.nextInt();
+                input.nextLine();
+            }
+            catch (InputMismatchException e) {
+                input.nextLine();
+                System.out.println("Invalid user selection. Please Try again");
+                userSelection = -1;
+            }
+            System.out.println();
+            if (userSelection == 1) {
+                return true;
+            }
+            else if (userSelection == 2) {
+                return false;
+            }
+            else {
+                numTries--;
+                System.out.printf("Number of tries left: %d\n\n", numTries);
+                userSelection = -1;
+            }
+        }
+        
+       
+        System.out.println("Exceeded the maximum number of tries. Program terminating");
+        return false;
+    }
+    
     public static String getUserName(Scanner input) {
-        System.out.print("Enter your name: ");
-        String name = input.nextLine();
+        
+        String name = "";
+        
+        while (name.length() < 1) {
+            System.out.println("\nEnter your name");
+            System.out.println("Note: Usernames are case sensitive.\n");
+            System.out.print("Username: ");
+            name = input.nextLine();
+            System.out.println();
+            if (name.length() < 1) {
+                System.out.println("\nUser names must have at least one character.");
+                System.out.println("Please try again\n");
+            }
+        }
         return name;
     }
     
     public static ExpertiseLevel getExpertiseLevel(Scanner input) {
+        System.out.println("Select your expertise level");
         System.out.println("1. Novice");
         System.out.println("2. Medium");
         System.out.println("3. Advanced");
         System.out.println("4. Master");
         
-        System.out.println("Select 1 - 4: ");
+        System.out.print("Select 1 - 4: ");
         int level = 1;
         try{
             level = input.nextInt();
@@ -73,6 +124,7 @@ public class UserCreator{
             level = 1;
         }
         finally {
+            System.out.println();
             input.nextLine();
         }
         
@@ -90,10 +142,11 @@ public class UserCreator{
     
     public static Color getUserColor(Scanner input) {
         int colorNum = 1;
+        System.out.println("Select a color");
         
         // Prints all color options
         for (Color colorChoice : Color.values()) { 
-            System.out.printf("%d. %s\n", colorNum, colorChoice); 
+            System.out.printf("%d. %s\n", colorNum, colorChoice.formatName()); 
             colorNum++;
         } 
         
@@ -104,15 +157,16 @@ public class UserCreator{
             
             // 9 is num colors
             if (colorNum < 1 || colorNum > 9) {
-                throw new InputMismatchException();
+                System.out.println("Invalid input. Blue will be selected.");
+                colorNum = 1;
             }
         }
         catch (InputMismatchException e) {
             System.out.println("Invalid input. Blue will be selected.");
-            colorNum = 1;
         }
         finally {
             input.nextLine();
+            System.out.println();
         }
         
         if (colorNum == 1) {
@@ -142,27 +196,46 @@ public class UserCreator{
         return Color.WHITE;
     }
     
-    public static String resolveMatchingUserNames(Hashtable<String, Element> users, Scanner input) {
+    /*
+     * Method that continues to prompt a user for a unique user name
+     * until one is found or until the user decides to quit the program.
+     * Input: a hash table with all the user and a scanner to retrieve
+     *        the user input.
+     * Output: A unique username or null if the user wants to quit.
+     */
+    public static String resolveMatchingUserNames(Hashtable<String, String> users, Scanner input) {
         System.out.println("Your user name has already been taken. Please try again.");
-        int menu_num = 1;
+        int menuNum = 1;
         String userName = null;
-        while (menu_num == 1) {
-         userName = getUserName(input);
+        while (menuNum == 1 && userName == null) {
+            
+            // Get new user name.
+            userName = getUserName(input);
+            
+            // If the user name is already used, tell user.
             if (users.containsKey(userName)) {
                 System.out.println("This user name has already been taken.");
                 System.out.println("Would you like to :");
                 System.out.println("1. Try again");
                 System.out.println("2. Quit");
+                System.out.print("Select 1 or 2: ");
                 
                 try{
-                    menu_num = input.nextInt();
+                    menuNum = input.nextInt();
                     input.nextLine();
+                    
+                    if (menuNum != 1 && menuNum != 2) {
+                        System.out.println("Invalid selection. Program terminating");
+                        return null;
+                    }
                 }
                 catch (InputMismatchException e) {
-                    System.out.println("Invalid selection. Your username will not be saved.");
-                    input.nextLine();
+                    System.out.println("Invalid selection. Program terminating");
                     return null;
                 }
+                
+                // Used since unique user name was not found.
+                userName = null;
             }
             else {
                 System.out.printf("Unique username found as %s!\n", userName);
@@ -178,7 +251,7 @@ public class UserCreator{
         String selectedColor = user.getChild("user_color").getValue();
         Color color;
         try {
-            expertiseLevel = ExpertiseLevel.valueOf(level);    
+            expertiseLevel = ExpertiseLevel.valueOf(level.toUpperCase());    
             
         }
         catch (IllegalArgumentException e) {
@@ -187,7 +260,7 @@ public class UserCreator{
         }
         
         try {
-            color = Color.valueOf(selectedColor);
+            color = Color.valueOf(selectedColor.toUpperCase());
         }
         catch (IllegalArgumentException e){
             System.out.println("An error occurred while accessing your color. Please re-enter a new one.");

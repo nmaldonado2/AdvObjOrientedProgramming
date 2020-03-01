@@ -13,5 +13,16 @@ public class ChessPlayer{
         this.expertiseLevel = expertiseLevel;
         this.userColor = userColor;
     }
+  
+    public String getName(){
+        return this.name;
+    }
     
+    public ExpertiseLevel getExpertiseLevel(){
+        return this.expertiseLevel;
+    }
+    
+    public Color getUserColor(){
+        return this.userColor;
+    }
 }

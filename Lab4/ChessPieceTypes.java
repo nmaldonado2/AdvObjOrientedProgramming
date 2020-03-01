@@ -15,15 +15,15 @@
 //                               chess pieces' classes' name fields to
 //                               be assigned to a proper string.
 
-package utep.cs3331.lab4.players;
+package utep.cs3331.lab4.chess.chesspieces;
 
 /*
  * Enum which defines the 6 different chess pieces
  * and the method format name which returns s String of
  * the first letter capitalized followed by lower case letters.
  */
-public enum ExpertiseLevel {
-    NOVICE, MEDIUM, ADVANCED, MASTER;
+public enum ChessPieceTypes {
+    PAWN, ROOK, BISHOP, KNIGHT, KING, QUEEN;
     
     /*
      * Method that returns a String of the current instances first
@@ -33,6 +33,6 @@ public enum ExpertiseLevel {
      *          followed by lower case letters.
      */
     public String formatName() {
-        return this.name().toLowerCase();
+        return this.name().substring(0, 1).toUpperCase() + this.name().substring(1).toLowerCase();
     }
 }
